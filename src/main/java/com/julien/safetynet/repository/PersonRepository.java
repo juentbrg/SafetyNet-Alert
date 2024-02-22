@@ -1,7 +1,7 @@
 package com.julien.safetynet.repository;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.julien.safetynet.entity.Data;
 import com.julien.safetynet.entity.PersonEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +22,18 @@ public class PersonRepository {
     @Value("${json.filePath}")
     private String jsonFilePath;
 
-    private List<PersonEntity> loadAllPersons() {
+    public List<PersonEntity> loadAllPersons() {
         ObjectMapper objectMapper = new ObjectMapper();
+        File file = new File(jsonFilePath);
+
+        if (!file.exists()) {
+            logger.error("JSON file not found");
+        }
+
         try {
-            return objectMapper.readValue(new File(jsonFilePath), new TypeReference<>() {});
-        } catch (IOException e) {
+            Data data = objectMapper.readValue(file, Data.class);
+            return data.getPersons();
+        } catch (Exception e) {
             logger.error("Error loading persons from JSON file", e);
             return new ArrayList<>();
         }
@@ -41,7 +48,7 @@ public class PersonRepository {
         }
     }
 
-    public Optional<PersonEntity> findPersonByFirstNameAndLastName(String firstName, String lastName) {
+    public Optional<PersonEntity> findPersonByFullName(String firstName, String lastName) {
         List<PersonEntity> persons = loadAllPersons();
         return persons.stream()
                 .filter(person -> person.getFirstName().equals(firstName) && person.getLastName().equals(lastName))

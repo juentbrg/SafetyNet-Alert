@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class FirestationEntity {
     private String address;
-    private int station;
+    private Integer station;
 
     public FirestationEntity() { }
 
@@ -21,11 +21,11 @@ public class FirestationEntity {
         this.address = address;
     }
 
-    public int getStation() {
+    public Integer getStation() {
         return station;
     }
 
-    public void setStation(int station) {
+    public void setStation(Integer station) {
         this.station = station;
     }
 

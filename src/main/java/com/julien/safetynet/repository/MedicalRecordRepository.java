@@ -1,7 +1,7 @@
 package com.julien.safetynet.repository;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.julien.safetynet.entity.Data;
 import com.julien.safetynet.entity.MedicalRecordEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +22,18 @@ public class MedicalRecordRepository {
     @Value("${json.filePath}")
     private String jsonFilePath;
 
-    private List<MedicalRecordEntity> loadAllMedicalRecords() {
+    public List<MedicalRecordEntity> loadAllMedicalRecords() {
         ObjectMapper objectMapper = new ObjectMapper();
+        File file = new File(jsonFilePath);
+
+        if (!file.exists()) {
+            logger.error("JSON file not found");
+        }
+
         try {
-            return objectMapper.readValue(new File(jsonFilePath), new TypeReference<>() {});
-        } catch (IOException e) {
+            Data data = objectMapper.readValue(file, Data.class);
+            return data.getMedicalrecords();
+        } catch (Exception e) {
             logger.error("Error loading medical records from JSON file", e);
             return new ArrayList<>();
         }
@@ -41,7 +48,7 @@ public class MedicalRecordRepository {
         }
     }
 
-    public Optional<MedicalRecordEntity> findMedicalRecordByName(String firstName, String lastName) {
+    public Optional<MedicalRecordEntity> findMedicalRecordByFullName(String firstName, String lastName) {
         List<MedicalRecordEntity> medicalRecords = loadAllMedicalRecords();
         return medicalRecords.stream()
                 .filter(medicalRecord -> medicalRecord.getFirstName().equals(firstName) && medicalRecord.getLastName().equals(lastName))

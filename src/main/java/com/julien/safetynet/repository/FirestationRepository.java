@@ -2,7 +2,9 @@ package com.julien.safetynet.repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.julien.safetynet.entity.Data;
 import com.julien.safetynet.entity.FirestationEntity;
+import com.julien.safetynet.entity.MedicalRecordEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,12 +24,19 @@ public class FirestationRepository {
     @Value("${json.filePath}")
     private String jsonFilePath;
 
-    private List<FirestationEntity> loadAllFirestations() {
+    public List<FirestationEntity> loadAllFirestations() {
         ObjectMapper objectMapper = new ObjectMapper();
+        File file = new File(jsonFilePath);
+
+        if (!file.exists()) {
+            logger.error("JSON file not found");
+        }
+
         try {
-            return objectMapper.readValue(new File(jsonFilePath), new TypeReference<>() {});
-        } catch (IOException e) {
-            logger.error("Error loading firestations from JSON file", e);
+            Data data = objectMapper.readValue(file, Data.class);
+            return data.getFirestations();
+        } catch (Exception e) {
+            logger.error("Error loading fire stations from JSON file", e);
             return new ArrayList<>();
         }
     }
@@ -39,10 +48,6 @@ public class FirestationRepository {
         } catch (IOException e) {
             logger.error("Error saving firestations to JSON file", e);
         }
-    }
-
-    public List<FirestationEntity> findAllFirestations() {
-        return loadAllFirestations();
     }
 
     public Optional<FirestationEntity> findFirestationByAddress(String address) {

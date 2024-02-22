@@ -6,16 +6,16 @@ import java.util.Objects;
 public class MedicalRecordEntity {
     private String firstName;
     private String lastName;
-    private String birthDate;
+    private String birthdate;
     private List<String> medications;
     private List<String> allergies;
 
     public MedicalRecordEntity() { }
 
-    public MedicalRecordEntity(String firstName, String lastName, String birthDate, List<String> medications, List<String> allergies) {
+    public MedicalRecordEntity(String firstName, String lastName, String birthdate, List<String> medications, List<String> allergies) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.birthDate = birthDate;
+        this.birthdate = birthdate;
         this.medications = medications;
         this.allergies = allergies;
     }
@@ -36,12 +36,12 @@ public class MedicalRecordEntity {
         this.lastName = lastName;
     }
 
-    public String getBirthDate() {
-        return birthDate;
+    public String getBirthdate() {
+        return birthdate;
     }
 
-    public void setBirthDate(String birthDate) {
-        this.birthDate = birthDate;
+    public void setBirthdate(String birthdate) {
+        this.birthdate = birthdate;
     }
 
     public List<String> getMedications() {
@@ -65,12 +65,12 @@ public class MedicalRecordEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MedicalRecordEntity that = (MedicalRecordEntity) o;
-        return Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(birthDate, that.birthDate) && Objects.equals(medications, that.medications) && Objects.equals(allergies, that.allergies);
+        return Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(birthdate, that.birthdate) && Objects.equals(medications, that.medications) && Objects.equals(allergies, that.allergies);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(firstName, lastName, birthDate, medications, allergies);
+        return Objects.hash(firstName, lastName, birthdate, medications, allergies);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class MedicalRecordEntity {
         return "MedicalRecordEntity{" +
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", birthDate='" + birthDate + '\'' +
+                ", birthDate='" + birthdate + '\'' +
                 ", medications=" + medications +
                 ", allergies=" + allergies +
                 '}';
