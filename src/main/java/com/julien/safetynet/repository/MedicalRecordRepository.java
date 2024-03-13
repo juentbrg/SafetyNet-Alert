@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -22,7 +23,7 @@ public class MedicalRecordRepository {
     @Value("${json.filePath}")
     private String jsonFilePath;
 
-    public List<MedicalRecordEntity> loadAllMedicalRecords() {
+    private Data loadData() {
         ObjectMapper objectMapper = new ObjectMapper();
         File file = new File(jsonFilePath);
 
@@ -31,47 +32,64 @@ public class MedicalRecordRepository {
         }
 
         try {
-            Data data = objectMapper.readValue(file, Data.class);
-            return data.getMedicalrecords();
+            return objectMapper.readValue(file, Data.class);
         } catch (Exception e) {
-            logger.error("Error loading medical records from JSON file", e);
-            return new ArrayList<>();
+            logger.error("Error loading data from JSON file", e);
+            return null;
         }
     }
 
-    private void saveAllMedicalRecords(List<MedicalRecordEntity> medicalRecords) {
+    private void saveAllMedicalRecords(Data data) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            objectMapper.writeValue(new File(jsonFilePath), medicalRecords);
+            objectMapper.writeValue(new File(jsonFilePath), data);
         } catch (IOException e) {
             logger.error("Error saving medical records to JSON file", e);
         }
     }
 
     public Optional<MedicalRecordEntity> findMedicalRecordByFullName(String firstName, String lastName) {
-        List<MedicalRecordEntity> medicalRecords = loadAllMedicalRecords();
-        return medicalRecords.stream()
-                .filter(medicalRecord -> medicalRecord.getFirstName().equals(firstName) && medicalRecord.getLastName().equals(lastName))
-                .findFirst();
+        Data data = loadData();
+        if (data == null) {
+            logger.error("Error loading data from JSON file");
+            return Optional.empty();
+        } else {
+            return data.getMedicalrecords().stream()
+                    .filter(medicalRecord -> medicalRecord.getFirstName().equals(firstName) && medicalRecord.getLastName().equals(lastName))
+                    .findFirst();
+        }
     }
 
     public void addMedicalRecord(MedicalRecordEntity newMedicalRecord) {
-        List<MedicalRecordEntity> medicalRecords = loadAllMedicalRecords();
-        medicalRecords.add(newMedicalRecord);
-        saveAllMedicalRecords(medicalRecords);
+        Data data = loadData();
+        if (data == null) {
+            logger.error("Error loading data from JSON file");
+            return;
+        }
+        data.getMedicalrecords().add(newMedicalRecord);
+        saveAllMedicalRecords(data);
     }
 
     public void updateMedicalRecord(String firstName, String lastName, MedicalRecordEntity updatedMedicalRecord) {
-        List<MedicalRecordEntity> medicalRecords = loadAllMedicalRecords();
+        Data data = loadData();
+        if (data == null) {
+            logger.error("Error loading data from JSON file");
+            return;
+        }
+        List<MedicalRecordEntity> medicalRecords = data.getMedicalrecords();
         medicalRecords.removeIf(medicalRecord -> medicalRecord.getFirstName().equals(firstName) && medicalRecord.getLastName().equals(lastName));
         medicalRecords.add(updatedMedicalRecord);
-        saveAllMedicalRecords(medicalRecords);
+        saveAllMedicalRecords(data);
     }
 
     public void deleteMedicalRecord(String firstName, String lastName) {
-        List<MedicalRecordEntity> medicalRecords = loadAllMedicalRecords();
-        medicalRecords.removeIf(medicalRecord -> medicalRecord.getFirstName().equals(firstName) && medicalRecord.getLastName().equals(lastName));
-        saveAllMedicalRecords(medicalRecords);
+        Data data = loadData();
+        if (data == null) {
+            logger.error("Error loading data from JSON file");
+            return;
+        }
+        data.getMedicalrecords().removeIf(medicalRecord -> medicalRecord.getFirstName().equals(firstName) && medicalRecord.getLastName().equals(lastName));
+        saveAllMedicalRecords(data);
     }
 }
 

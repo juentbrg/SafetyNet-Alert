@@ -22,7 +22,7 @@ public class FireStationRepository {
     @Value("${json.filePath}")
     private String jsonFilePath;
 
-    public List<FireStationEntity> loadAllFireStations() {
+    private Data loadData() {
         ObjectMapper objectMapper = new ObjectMapper();
         File file = new File(jsonFilePath);
 
@@ -31,46 +31,63 @@ public class FireStationRepository {
         }
 
         try {
-            Data data = objectMapper.readValue(file, Data.class);
-            return data.getFirestations();
+            return objectMapper.readValue(file, Data.class);
         } catch (Exception e) {
-            logger.error("Error loading fire stations from JSON file", e);
-            return new ArrayList<>();
+            logger.error("Error loading data from JSON file", e);
+            return null;
         }
     }
 
-    private void saveAllFireStations(List<FireStationEntity> fireStations) {
+    private void saveAllFireStations(Data data) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            objectMapper.writeValue(new File(jsonFilePath), fireStations);
+            objectMapper.writeValue(new File(jsonFilePath), data);
         } catch (IOException e) {
             logger.error("Error saving fireStations to JSON file", e);
         }
     }
 
     public Optional<FireStationEntity> findFireStationByAddress(String address) {
-        List<FireStationEntity> fireStations = loadAllFireStations();
-        return fireStations.stream()
-                .filter(fireStation -> fireStation.getAddress().equals(address))
-                .findFirst();
+        Data data = loadData();
+        if (data == null) {
+            logger.error("Error loading data from JSON file");
+            return Optional.empty();
+        } else {
+            return data.getFirestations().stream()
+                    .filter(fireStation -> fireStation.getAddress().equals(address))
+                    .findFirst();
+        }
     }
 
     public void addFireStation(FireStationEntity fireStation) {
-        List<FireStationEntity> fireStations = loadAllFireStations();
-        fireStations.add(fireStation);
-        saveAllFireStations(fireStations);
+        Data data = loadData();
+        if (data == null) {
+            logger.error("Error loading data from JSON file");
+            return;
+        }
+        data.getFirestations().add(fireStation);
+        saveAllFireStations(data);
     }
 
     public void updateFireStation(String address, FireStationEntity updatedFireStation) {
-        List<FireStationEntity> fireStations = loadAllFireStations();
+        Data data = loadData();
+        if (data == null) {
+            logger.error("Error loading data from JSON file");
+            return;
+        }
+        List<FireStationEntity> fireStations = data.getFirestations();
         fireStations.removeIf(fireStation -> fireStation.getAddress().equals(address));
         fireStations.add(updatedFireStation);
-        saveAllFireStations(fireStations);
+        saveAllFireStations(data);
     }
 
     public void deleteFireStation(String address) {
-        List<FireStationEntity> fireStations = loadAllFireStations();
-        fireStations.removeIf(fireStation -> fireStation.getAddress().equals(address));
-        saveAllFireStations(fireStations);
+        Data data = loadData();
+        if (data == null) {
+            logger.error("Error loading data from JSON file");
+            return;
+        }
+        data.getFirestations().removeIf(fireStation -> fireStation.getAddress().equals(address));
+        saveAllFireStations(data);
     }
 }

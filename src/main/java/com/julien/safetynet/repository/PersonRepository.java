@@ -22,7 +22,7 @@ public class PersonRepository {
     @Value("${json.filePath}")
     private String jsonFilePath;
 
-    public List<PersonEntity> loadAllPersons() {
+    private Data loadData() {
         ObjectMapper objectMapper = new ObjectMapper();
         File file = new File(jsonFilePath);
 
@@ -31,47 +31,64 @@ public class PersonRepository {
         }
 
         try {
-            Data data = objectMapper.readValue(file, Data.class);
-            return data.getPersons();
+            return objectMapper.readValue(file, Data.class);
         } catch (Exception e) {
-            logger.error("Error loading persons from JSON file", e);
-            return new ArrayList<>();
+            logger.error("Error loading data from JSON file", e);
+            return null;
         }
     }
 
-    private void saveAllPersons(List<PersonEntity> persons) {
+    private void saveAllPersons(Data data) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            objectMapper.writeValue(new File(jsonFilePath), persons);
+            objectMapper.writeValue(new File(jsonFilePath), data);
         } catch (IOException e) {
             logger.error("Error saving persons to JSON file", e);
         }
     }
 
     public Optional<PersonEntity> findPersonByFullName(String firstName, String lastName) {
-        List<PersonEntity> persons = loadAllPersons();
-        return persons.stream()
-                .filter(person -> person.getFirstName().equals(firstName) && person.getLastName().equals(lastName))
-                .findFirst();
+        Data data = loadData();
+        if (data == null) {
+            logger.error("Error loading data from JSON file");
+            return Optional.empty();
+        } else {
+            return data.getPersons().stream()
+                    .filter(person -> person.getFirstName().equals(firstName) && person.getLastName().equals(lastName))
+                    .findFirst();
+        }
     }
 
     public void addPerson(PersonEntity newPerson) {
-        List<PersonEntity> persons = loadAllPersons();
-        persons.add(newPerson);
-        saveAllPersons(persons);
+        Data data = loadData();
+        if (data == null) {
+            logger.error("Error loading data from JSON file");
+            return;
+        }
+        data.getPersons().add(newPerson);
+        saveAllPersons(data);
     }
 
     public void updatePerson(String firstName, String lastName, PersonEntity updatedPerson) {
-        List<PersonEntity> persons = loadAllPersons();
+        Data data = loadData();
+        if (data == null) {
+            logger.error("Error loading data from JSON file");
+            return;
+        }
+        List<PersonEntity> persons = data.getPersons();
         persons.removeIf(person -> person.getFirstName().equals(firstName) && person.getLastName().equals(lastName));
         persons.add(updatedPerson);
-        saveAllPersons(persons);
+        saveAllPersons(data);
     }
 
     public void deletePerson(String firstName, String lastName) {
-        List<PersonEntity> persons = loadAllPersons();
-        persons.removeIf(person -> person.getFirstName().equals(firstName) && person.getLastName().equals(lastName));
-        saveAllPersons(persons);
+        Data data = loadData();
+        if (data == null) {
+            logger.error("Error loading data from JSON file");
+            return;
+        }
+        data.getPersons().removeIf(person -> person.getFirstName().equals(firstName) && person.getLastName().equals(lastName));
+        saveAllPersons(data);
     }
 }
 
