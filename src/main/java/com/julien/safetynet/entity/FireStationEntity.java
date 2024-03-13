@@ -2,13 +2,13 @@ package com.julien.safetynet.entity;
 
 import java.util.Objects;
 
-public class FirestationEntity {
+public class FireStationEntity {
     private String address;
     private Integer station;
 
-    public FirestationEntity() { }
+    public FireStationEntity() { }
 
-    public FirestationEntity(String address, int station) {
+    public FireStationEntity(String address, int station) {
         this.address = address;
         this.station = station;
     }
@@ -33,7 +33,7 @@ public class FirestationEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        FirestationEntity that = (FirestationEntity) o;
+        FireStationEntity that = (FireStationEntity) o;
         return station == that.station && Objects.equals(address, that.address);
     }
 

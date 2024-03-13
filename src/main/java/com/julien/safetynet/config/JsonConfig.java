@@ -12,6 +12,8 @@ public class JsonConfig {
 
     private Data data;
 
+    private String filePath;
+
     public Data getData() {
         return data;
     }
@@ -19,8 +21,6 @@ public class JsonConfig {
     public void setData(Data data) {
         this.data = data;
     }
-
-    private String filePath;
 
     public String getFilePath() {
         return filePath;

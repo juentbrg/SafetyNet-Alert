@@ -15,7 +15,7 @@ public class MedicalRecordService {
         this.medicalRecordRepository = medicalRecordRepository;
     }
 
-    public MedicalRecordEntity getMedicalRecord(String firstName, String lastName) {
+    public MedicalRecordEntity getMedicalRecordByFullName(String firstName, String lastName) {
         Optional<MedicalRecordEntity> medicalRecordOpt = medicalRecordRepository.findMedicalRecordByFullName(firstName, lastName);
         return medicalRecordOpt.orElse(null);
     }
@@ -30,9 +30,9 @@ public class MedicalRecordService {
     }
 
     public boolean updateMedicalRecord(String firstName, String lastName, MedicalRecordEntity updatedMedicalRecord) {
-        Optional<MedicalRecordEntity> medicalRecordopt = medicalRecordRepository.findMedicalRecordByFullName(firstName, lastName);
-        if (medicalRecordopt.isPresent()) {
-            MedicalRecordEntity existingMedicalRecord = medicalRecordopt.get();
+        Optional<MedicalRecordEntity> medicalRecordOpt = medicalRecordRepository.findMedicalRecordByFullName(firstName, lastName);
+        if (medicalRecordOpt.isPresent()) {
+            MedicalRecordEntity existingMedicalRecord = medicalRecordOpt.get();
 
             if (!updatedMedicalRecord.getMedications().isEmpty()) {
                 existingMedicalRecord.setMedications(updatedMedicalRecord.getMedications());

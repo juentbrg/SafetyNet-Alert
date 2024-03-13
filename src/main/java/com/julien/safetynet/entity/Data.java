@@ -5,7 +5,7 @@ import java.util.List;
 public class Data {
 
     private List<PersonEntity> persons;
-    private List<FirestationEntity> firestations;
+    private List<FireStationEntity> firestations;
     private List<MedicalRecordEntity> medicalrecords;
 
     public List<PersonEntity> getPersons() {
@@ -16,11 +16,11 @@ public class Data {
         this.persons = persons;
     }
 
-    public List<FirestationEntity> getFirestations() {
+    public List<FireStationEntity> getFirestations() {
         return firestations;
     }
 
-    public void setFirestations(List<FirestationEntity> firestations) {
+    public void setFirestations(List<FireStationEntity> firestations) {
         this.firestations = firestations;
     }
 

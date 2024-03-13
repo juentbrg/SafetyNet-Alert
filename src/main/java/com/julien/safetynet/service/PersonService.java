@@ -15,7 +15,7 @@ public class PersonService {
         this.personRepository = personRepository;
     }
 
-    public PersonEntity getPersonByFirstNameAndLastName(String firstName, String lastName) {
+    public PersonEntity getPersonByFullName(String firstName, String lastName) {
         Optional<PersonEntity> personOpt = personRepository.findPersonByFullName(firstName, lastName);
         return personOpt.orElse(null);
     }
