@@ -1,6 +1,7 @@
 package com.julien.safetynet.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.julien.safetynet.DTO.PersonDTO;
 import com.julien.safetynet.entity.Data;
 import com.julien.safetynet.entity.PersonEntity;
 import org.slf4j.Logger;
@@ -56,6 +57,17 @@ public class PersonRepository {
             return data.getPersons().stream()
                     .filter(person -> person.getFirstName().equals(firstName) && person.getLastName().equals(lastName))
                     .findFirst();
+        }
+    }
+    public List<PersonEntity> findAllPersonByAddress(String address) {
+        Data data = loadData();
+        if (data == null) {
+            logger.error("Error loading data from JSON file");
+            return null;
+        } else {
+            return data.getPersons().stream()
+                    .filter(person -> person.getAddress().equals(address))
+                    .toList();
         }
     }
 

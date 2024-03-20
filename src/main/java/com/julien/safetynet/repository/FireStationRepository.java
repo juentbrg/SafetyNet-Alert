@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,6 +57,17 @@ public class FireStationRepository {
             return data.getFirestations().stream()
                     .filter(fireStation -> fireStation.getAddress().equals(address))
                     .findFirst();
+        }
+    }
+
+    public List<FireStationEntity> findAllFireStationByStationNumber(int stationNumber) {
+        Data data = loadData();
+        if (data == null) {
+            logger.error("Error loading data from JSON file");
+            return null;
+        } else {
+            return data.getFirestations().stream()
+                    .filter(fireStation -> fireStation.getStation().equals(stationNumber)).toList();
         }
     }
 

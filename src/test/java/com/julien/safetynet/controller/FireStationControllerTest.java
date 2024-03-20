@@ -1,6 +1,8 @@
 package com.julien.safetynet.controller;
 
+import com.julien.safetynet.DTO.PersonDTO;
 import com.julien.safetynet.entity.FireStationEntity;
+import com.julien.safetynet.pojo.PersonCovered;
 import com.julien.safetynet.service.FireStationService;
 import com.julien.safetynet.utils.ApiResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +13,9 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -59,6 +64,44 @@ public class FireStationControllerTest {
         Mockito.when(fireStationService.getFireStationByAddress(address)).thenReturn(null);
 
         ResponseEntity<ApiResponse<FireStationEntity>> response = fireStationController.getFireStationByAddress(address);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    public void getPeopleCoveredReturnsOkTest() {
+        int stationNumber = 1;
+        PersonCovered mockPersonCovered = new PersonCovered();
+        List<PersonDTO> mockPersonDTOList = new ArrayList<>();
+        PersonDTO mockPersonDTO = new PersonDTO();
+
+        mockPersonDTO.setFirstName("John");
+        mockPersonDTO.setLastName("Doe");
+        mockPersonDTO.setAddress("1 rue du test unitaire");
+        mockPersonDTO.setPhone("0676543421");
+
+        mockPersonDTOList.add(mockPersonDTO);
+
+        mockPersonCovered.setPersonCovered(mockPersonDTOList);
+        mockPersonCovered.setAdultNumber(3);
+        mockPersonCovered.setChildrenNumber(3);
+
+        Mockito.when(fireStationService.getPersonCovered(stationNumber)).thenReturn(mockPersonCovered);
+
+        ResponseEntity<ApiResponse<PersonCovered>> response = fireStationController.getPeopleCovered(stationNumber);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Successfully retrieved covered persons.", response.getBody().getMessage());
+        assertEquals(mockPersonDTOList, response.getBody().getBody().getPersonCovered());
+    }
+
+    @Test
+    public void getPeopleCoveredReturnsNotFoundTest() {
+        int stationNumber = 6;
+
+        Mockito.when(fireStationService.getPersonCovered(stationNumber)).thenReturn(null);
+
+        ResponseEntity<ApiResponse<PersonCovered>> response = fireStationController.getPeopleCovered(stationNumber);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }

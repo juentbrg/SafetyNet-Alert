@@ -1,6 +1,8 @@
 package com.julien.safetynet.controller;
 
+import com.julien.safetynet.DTO.PersonDTO;
 import com.julien.safetynet.entity.FireStationEntity;
+import com.julien.safetynet.pojo.PersonCovered;
 import com.julien.safetynet.service.FireStationService;
 import com.julien.safetynet.utils.ApiResponse;
 import io.micrometer.common.util.StringUtils;
@@ -9,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/fire-station")
@@ -41,6 +45,24 @@ public class FireStationController {
             }
         } catch (Exception e) {
             logger.error("Error processing request for {}", address, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<PersonCovered>> getPeopleCovered(@RequestParam int stationNumber) {
+        try {
+            PersonCovered personCovered = fireStationService.getPersonCovered(stationNumber);
+
+            if (null != personCovered) {
+                logger.info("Successful request for station number {}", stationNumber);
+                return ResponseEntity.ok(new ApiResponse<>("Successfully retrieved covered persons.", personCovered));
+            } else {
+                logger.error("No covered persons found for {}", stationNumber);
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            logger.error("Error processing request with {}", stationNumber, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
