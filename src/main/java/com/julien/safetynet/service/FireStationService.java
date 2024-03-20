@@ -1,6 +1,6 @@
 package com.julien.safetynet.service;
 
-import com.julien.safetynet.DTO.PersonDTO;
+import com.julien.safetynet.DTO.PersonCoveredDTO;
 import com.julien.safetynet.entity.FireStationEntity;
 import com.julien.safetynet.entity.MedicalRecordEntity;
 import com.julien.safetynet.entity.PersonEntity;
@@ -11,7 +11,6 @@ import com.julien.safetynet.repository.PersonRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -37,7 +36,7 @@ public class FireStationService {
     public PersonCovered getPersonCovered(int stationNumber) {
         PersonCovered personCovered = new PersonCovered();
         List<FireStationEntity> fireStationList = fireStationRepository.findAllFireStationByStationNumber(stationNumber);
-        Set<PersonDTO> personDTOSet = new HashSet<>();
+        Set<PersonCoveredDTO> personCoveredDTOSet = new HashSet<>();
         int childNumber = 0;
         int adultNumber = 0;
         LocalDate currentDate = LocalDate.now();
@@ -47,13 +46,13 @@ public class FireStationService {
             String address = fireStation.getAddress();
             List<PersonEntity> listPersonsEntity = personRepository.findAllPersonByAddress(address);
             for (PersonEntity person : listPersonsEntity) {
-                PersonDTO personDTO = new PersonDTO(person);
-                personDTOSet.add(personDTO);
+                PersonCoveredDTO personCoveredDTO = new PersonCoveredDTO(person);
+                personCoveredDTOSet.add(personCoveredDTO);
             }
         }
 
-        for (PersonDTO personDTO : personDTOSet) {
-            Optional<MedicalRecordEntity> medicalRecordOpt = medicalRecordRepository.findMedicalRecordByFullName(personDTO.getFirstName(), personDTO.getLastName());
+        for (PersonCoveredDTO personCoveredDTO : personCoveredDTOSet) {
+            Optional<MedicalRecordEntity> medicalRecordOpt = medicalRecordRepository.findMedicalRecordByFullName(personCoveredDTO.getFirstName(), personCoveredDTO.getLastName());
             if (medicalRecordOpt.isPresent()){
                 LocalDate birthdate = LocalDate.parse(medicalRecordOpt.get().getBirthdate(), DateTimeFormatter.ofPattern("MM/dd/yyyy"));
 
@@ -65,8 +64,8 @@ public class FireStationService {
             }
         }
 
-        if (!personDTOSet.isEmpty()) {
-            personCovered.setPersonCovered(personDTOSet.stream().toList());
+        if (!personCoveredDTOSet.isEmpty()) {
+            personCovered.setPersonCovered(personCoveredDTOSet.stream().toList());
             personCovered.setAdultNumber(adultNumber);
             personCovered.setChildrenNumber(childNumber);
 

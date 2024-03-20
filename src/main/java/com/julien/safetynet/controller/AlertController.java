@@ -1,7 +1,7 @@
 package com.julien.safetynet.controller;
 
 import com.julien.safetynet.pojo.Child;
-import com.julien.safetynet.pojo.PersonCovered;
+import com.julien.safetynet.pojo.InhabitantWithFireStation;
 import com.julien.safetynet.service.AlertService;
 import com.julien.safetynet.utils.ApiResponse;
 import org.slf4j.Logger;
@@ -57,6 +57,24 @@ public class AlertController {
             }
         } catch (Exception e) {
             logger.error("Error processing request with {}", firestation, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/fire")
+    public ResponseEntity<ApiResponse<InhabitantWithFireStation>> getInhabitantAndFireStationByAddress(@RequestParam String address){
+        try {
+            InhabitantWithFireStation inhabitantAndFireStation = alertService.getInhabitantAndFireStationByAddress(address);
+
+            if (null != inhabitantAndFireStation) {
+                logger.info("Successful request for address {}", address);
+                return ResponseEntity.ok(new ApiResponse<>("Successfully retrieved inhabitant list.", inhabitantAndFireStation));
+            } else {
+                logger.error("No inhabitant found for {}", address);
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            logger.error("Error processing request with {}", address, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

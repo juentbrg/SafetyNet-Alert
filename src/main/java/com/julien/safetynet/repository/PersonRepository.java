@@ -1,7 +1,6 @@
 package com.julien.safetynet.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.julien.safetynet.DTO.PersonDTO;
 import com.julien.safetynet.entity.Data;
 import com.julien.safetynet.entity.PersonEntity;
 import org.slf4j.Logger;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

@@ -1,6 +1,5 @@
 package com.julien.safetynet.controller;
 
-import com.julien.safetynet.DTO.PersonDTO;
 import com.julien.safetynet.entity.FireStationEntity;
 import com.julien.safetynet.pojo.PersonCovered;
 import com.julien.safetynet.service.FireStationService;
@@ -11,8 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/fire-station")

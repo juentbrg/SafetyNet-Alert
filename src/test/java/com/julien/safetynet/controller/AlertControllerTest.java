@@ -1,7 +1,8 @@
 package com.julien.safetynet.controller;
 
-import com.julien.safetynet.DTO.PersonDTO;
+import com.julien.safetynet.DTO.PersonCoveredDTO;
 import com.julien.safetynet.pojo.Child;
+import com.julien.safetynet.pojo.InhabitantWithFireStation;
 import com.julien.safetynet.service.AlertService;
 import com.julien.safetynet.utils.ApiResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,14 +36,14 @@ public class AlertControllerTest {
         String address = "1 rue du test unitaire";
         List<Child> mockChildList = new ArrayList<>();
         Child mockChild = new Child();
-        List<PersonDTO> mockPersonDTOList = new ArrayList<>();
-        PersonDTO mockPersonDTO = new PersonDTO();
+        List<PersonCoveredDTO> mockPersonCoveredDTOList = new ArrayList<>();
+        PersonCoveredDTO mockPersonCoveredDTO = new PersonCoveredDTO();
 
-        mockPersonDTOList.add(mockPersonDTO);
+        mockPersonCoveredDTOList.add(mockPersonCoveredDTO);
         mockChild.setFirstName("John");
         mockChild.setLastName("Doe");
         mockChild.setAge(16);
-        mockChild.setOtherPersonInHousehold(mockPersonDTOList);
+        mockChild.setOtherPersonInHousehold(mockPersonCoveredDTOList);
 
         mockChildList.add(mockChild);
 
@@ -68,7 +69,7 @@ public class AlertControllerTest {
     }
 
     @Test
-    public void getgetPhoneNumberResidentServedReturnsOkTest() {
+    public void getPhoneNumberResidentServedReturnsOkTest() {
         int firestation = 1;
         List<String> mockPhoneNumberResidentCoveredList = new ArrayList<>();
         mockPhoneNumberResidentCoveredList.add("0666678754");
@@ -90,6 +91,31 @@ public class AlertControllerTest {
         Mockito.when(alertService.getPhoneNumberResidentServed(firestation)).thenReturn(mockPhoneNumberResidentCoveredList);
 
         ResponseEntity<ApiResponse<List<String>>> response = alertController.getPhoneNumberResidentServed(firestation);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    public void getInhabitantAndFireStationByAddressReturnsOkTest() {
+        String address = "1 rue du test unitaire";
+        InhabitantWithFireStation mockInhabitantWithFireStation = new InhabitantWithFireStation();
+
+        Mockito.when(alertService.getInhabitantAndFireStationByAddress(address)).thenReturn(mockInhabitantWithFireStation);
+
+        ResponseEntity<ApiResponse<InhabitantWithFireStation>> response = alertController.getInhabitantAndFireStationByAddress(address);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Successfully retrieved inhabitant list.", response.getBody().getMessage());
+        assertEquals(mockInhabitantWithFireStation, response.getBody().getBody());
+    }
+
+    @Test
+    public void getInhabitantAndFireStationByAddressReturnsNotFoundTest() {
+        String address = "15 rue du test unitaire";
+
+        Mockito.when(alertService.getInhabitantAndFireStationByAddress(address)).thenReturn(null);
+
+        ResponseEntity<ApiResponse<InhabitantWithFireStation>> response = alertController.getInhabitantAndFireStationByAddress(address);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }

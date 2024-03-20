@@ -1,6 +1,6 @@
 package com.julien.safetynet.controller;
 
-import com.julien.safetynet.DTO.PersonDTO;
+import com.julien.safetynet.DTO.PersonCoveredDTO;
 import com.julien.safetynet.entity.FireStationEntity;
 import com.julien.safetynet.pojo.PersonCovered;
 import com.julien.safetynet.service.FireStationService;
@@ -72,17 +72,17 @@ public class FireStationControllerTest {
     public void getPeopleCoveredReturnsOkTest() {
         int stationNumber = 1;
         PersonCovered mockPersonCovered = new PersonCovered();
-        List<PersonDTO> mockPersonDTOList = new ArrayList<>();
-        PersonDTO mockPersonDTO = new PersonDTO();
+        List<PersonCoveredDTO> mockPersonCoveredDTOList = new ArrayList<>();
+        PersonCoveredDTO mockPersonCoveredDTO = new PersonCoveredDTO();
 
-        mockPersonDTO.setFirstName("John");
-        mockPersonDTO.setLastName("Doe");
-        mockPersonDTO.setAddress("1 rue du test unitaire");
-        mockPersonDTO.setPhone("0676543421");
+        mockPersonCoveredDTO.setFirstName("John");
+        mockPersonCoveredDTO.setLastName("Doe");
+        mockPersonCoveredDTO.setAddress("1 rue du test unitaire");
+        mockPersonCoveredDTO.setPhone("0676543421");
 
-        mockPersonDTOList.add(mockPersonDTO);
+        mockPersonCoveredDTOList.add(mockPersonCoveredDTO);
 
-        mockPersonCovered.setPersonCovered(mockPersonDTOList);
+        mockPersonCovered.setPersonCovered(mockPersonCoveredDTOList);
         mockPersonCovered.setAdultNumber(3);
         mockPersonCovered.setChildrenNumber(3);
 
@@ -92,7 +92,7 @@ public class FireStationControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Successfully retrieved covered persons.", response.getBody().getMessage());
-        assertEquals(mockPersonDTOList, response.getBody().getBody().getPersonCovered());
+        assertEquals(mockPersonCoveredDTOList, response.getBody().getBody().getPersonCovered());
     }
 
     @Test

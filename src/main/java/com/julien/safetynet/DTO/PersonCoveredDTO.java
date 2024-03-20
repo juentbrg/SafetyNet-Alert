@@ -1,19 +1,18 @@
 package com.julien.safetynet.DTO;
 
-import com.julien.safetynet.entity.MedicalRecordEntity;
 import com.julien.safetynet.entity.PersonEntity;
 
 import java.util.Objects;
 
-public class PersonDTO {
+public class PersonCoveredDTO {
     private String firstName;
     private String lastName;
     private String address;
     private String phone;
 
-    public PersonDTO() {}
+    public PersonCoveredDTO() {}
 
-    public PersonDTO(PersonEntity person) {
+    public PersonCoveredDTO(PersonEntity person) {
         this.firstName = person.getFirstName();
         this.lastName = person.getLastName();
         this.address = person.getAddress();
@@ -56,8 +55,8 @@ public class PersonDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PersonDTO personDTO = (PersonDTO) o;
-        return Objects.equals(firstName, personDTO.firstName) && Objects.equals(lastName, personDTO.lastName) && Objects.equals(address, personDTO.address) && Objects.equals(phone, personDTO.phone);
+        PersonCoveredDTO personCoveredDTO = (PersonCoveredDTO) o;
+        return Objects.equals(firstName, personCoveredDTO.firstName) && Objects.equals(lastName, personCoveredDTO.lastName) && Objects.equals(address, personCoveredDTO.address) && Objects.equals(phone, personCoveredDTO.phone);
     }
 
     @Override

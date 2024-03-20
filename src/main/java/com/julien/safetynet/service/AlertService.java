@@ -1,11 +1,12 @@
 package com.julien.safetynet.service;
 
-import com.julien.safetynet.DTO.PersonDTO;
+import com.julien.safetynet.DTO.PersonCoveredDTO;
 import com.julien.safetynet.entity.FireStationEntity;
 import com.julien.safetynet.entity.MedicalRecordEntity;
 import com.julien.safetynet.entity.PersonEntity;
 import com.julien.safetynet.pojo.Child;
-import com.julien.safetynet.pojo.PersonCovered;
+import com.julien.safetynet.pojo.Inhabitant;
+import com.julien.safetynet.pojo.InhabitantWithFireStation;
 import com.julien.safetynet.repository.FireStationRepository;
 import com.julien.safetynet.repository.MedicalRecordRepository;
 import com.julien.safetynet.repository.PersonRepository;
@@ -48,10 +49,10 @@ public class AlertService {
         }
 
         for (Child child : childList) {
-            List<PersonDTO> otherPersonInHousehold = new ArrayList<>();
+            List<PersonCoveredDTO> otherPersonInHousehold = new ArrayList<>();
             for (PersonEntity person : personList){
                 if (!Objects.equals(person.getFirstName(), child.getFirstName())){
-                    otherPersonInHousehold.add(new PersonDTO(person));
+                    otherPersonInHousehold.add(new PersonCoveredDTO(person));
                 }
             }
             child.setOtherPersonInHousehold(otherPersonInHousehold);
@@ -84,6 +85,37 @@ public class AlertService {
             return phoneNumberResidentCoveredList;
         } else {
             return Collections.emptyList();
+        }
+    }
+
+    public InhabitantWithFireStation getInhabitantAndFireStationByAddress(String address){
+        List<PersonEntity> personList = personRepository.findAllPersonByAddress(address);
+        Optional<FireStationEntity> fireStationOpt = fireStationRepository.findFireStationByAddress(address);
+        InhabitantWithFireStation inhabitantWithFireStation = new InhabitantWithFireStation();
+        List<Inhabitant> inhabitantList = new ArrayList<>();
+        LocalDate currentDate = LocalDate.now();
+
+        for (PersonEntity person : personList) {
+            Optional<MedicalRecordEntity> medicalRecordOpt = medicalRecordRepository.findMedicalRecordByFullName(person.getFirstName(), person.getLastName());
+            if (medicalRecordOpt.isPresent()) {
+                LocalDate birthdate = LocalDate.parse(medicalRecordOpt.get().getBirthdate(), DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+                int age = Period.between(birthdate, currentDate).getYears();
+                Inhabitant inhabitant = new Inhabitant();
+                inhabitant.setFirstName(person.getFirstName());
+                inhabitant.setLastName(person.getLastName());
+                inhabitant.setPhoneNumber(person.getPhone());
+                inhabitant.setAge(age);
+                inhabitant.setMedication(medicalRecordOpt.get().getMedications());
+                inhabitant.setAllergies(medicalRecordOpt.get().getAllergies());
+                inhabitantList.add(inhabitant);
+            }
+        }
+        if (fireStationOpt.isPresent() && !inhabitantList.isEmpty()) {
+            inhabitantWithFireStation.setInhabitantList(inhabitantList);
+            inhabitantWithFireStation.setStationNumber(fireStationOpt.get().getStation());
+            return inhabitantWithFireStation;
+        } else {
+            return null;
         }
     }
 }

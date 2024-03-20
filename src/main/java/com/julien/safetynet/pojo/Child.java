@@ -1,6 +1,6 @@
 package com.julien.safetynet.pojo;
 
-import com.julien.safetynet.DTO.PersonDTO;
+import com.julien.safetynet.DTO.PersonCoveredDTO;
 
 import java.util.List;
 import java.util.Objects;
@@ -9,11 +9,11 @@ public class Child {
     String firstName;
     String lastName;
     int age;
-    List<PersonDTO> otherPersonInHousehold;
+    List<PersonCoveredDTO> otherPersonInHousehold;
 
     public Child() {}
 
-    public Child(String firstName, String lastName, int age, List<PersonDTO> otherPersonInHousehold) {
+    public Child(String firstName, String lastName, int age, List<PersonCoveredDTO> otherPersonInHousehold) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
@@ -44,11 +44,11 @@ public class Child {
         this.age = age;
     }
 
-    public List<PersonDTO> getOtherPersonInHousehold() {
+    public List<PersonCoveredDTO> getOtherPersonInHousehold() {
         return otherPersonInHousehold;
     }
 
-    public void setOtherPersonInHousehold(List<PersonDTO> otherPersonInHousehold) {
+    public void setOtherPersonInHousehold(List<PersonCoveredDTO> otherPersonInHousehold) {
         this.otherPersonInHousehold = otherPersonInHousehold;
     }
 

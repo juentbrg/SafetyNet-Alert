@@ -1,28 +1,28 @@
 package com.julien.safetynet.pojo;
 
-import com.julien.safetynet.DTO.PersonDTO;
+import com.julien.safetynet.DTO.PersonCoveredDTO;
 
 import java.util.List;
 import java.util.Objects;
 
 public class PersonCovered {
-    List<PersonDTO> personCovered;
+    List<PersonCoveredDTO> personCovered;
     int childrenNumber;
     int adultNumber;
 
     public PersonCovered() {}
 
-    public PersonCovered(List<PersonDTO> personCovered, int childrenNumber, int adultNumber) {
+    public PersonCovered(List<PersonCoveredDTO> personCovered, int childrenNumber, int adultNumber) {
         this.personCovered = personCovered;
         this.childrenNumber = childrenNumber;
         this.adultNumber = adultNumber;
     }
 
-    public List<PersonDTO> getPersonCovered() {
+    public List<PersonCoveredDTO> getPersonCovered() {
         return personCovered;
     }
 
-    public void setPersonCovered(List<PersonDTO> personCovered) {
+    public void setPersonCovered(List<PersonCoveredDTO> personCovered) {
         this.personCovered = personCovered;
     }
 
