@@ -1,9 +1,12 @@
 package com.julien.safetynet.service;
 
 import com.julien.safetynet.DTO.PersonDTO;
+import com.julien.safetynet.entity.FireStationEntity;
 import com.julien.safetynet.entity.MedicalRecordEntity;
 import com.julien.safetynet.entity.PersonEntity;
 import com.julien.safetynet.pojo.Child;
+import com.julien.safetynet.pojo.PersonCovered;
+import com.julien.safetynet.repository.FireStationRepository;
 import com.julien.safetynet.repository.MedicalRecordRepository;
 import com.julien.safetynet.repository.PersonRepository;
 import org.springframework.stereotype.Service;
@@ -16,10 +19,12 @@ import java.util.*;
 @Service
 public class AlertService {
     private final PersonRepository personRepository;
+    private final FireStationRepository fireStationRepository;
     private final MedicalRecordRepository medicalRecordRepository;
 
-    public AlertService(PersonRepository personRepository, MedicalRecordRepository medicalRecordRepository) {
+    public AlertService(PersonRepository personRepository, FireStationRepository fireStationRepository, MedicalRecordRepository medicalRecordRepository) {
         this.personRepository = personRepository;
+        this.fireStationRepository = fireStationRepository;
         this.medicalRecordRepository = medicalRecordRepository;
     }
 
@@ -54,6 +59,29 @@ public class AlertService {
 
         if (!childList.isEmpty()) {
             return childList;
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public List<String> getPhoneNumberResidentServed(int stationNumber) {
+        List<String> phoneNumberResidentCoveredList = new ArrayList<>();
+        List<FireStationEntity> fireStationList = fireStationRepository.findAllFireStationByStationNumber(stationNumber);
+        Set<PersonEntity> personList = new HashSet<>();
+
+
+        for (FireStationEntity fireStation : fireStationList) {
+            String address = fireStation.getAddress();
+            List<PersonEntity> listPersonsEntity = personRepository.findAllPersonByAddress(address);
+            personList.addAll(listPersonsEntity);
+        }
+
+        for (PersonEntity person : personList) {
+            phoneNumberResidentCoveredList.add(person.getPhone());
+        }
+
+        if (!phoneNumberResidentCoveredList.isEmpty()){
+            return phoneNumberResidentCoveredList;
         } else {
             return Collections.emptyList();
         }

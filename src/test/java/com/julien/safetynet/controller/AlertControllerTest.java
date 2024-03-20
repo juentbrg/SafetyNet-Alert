@@ -31,7 +31,7 @@ public class AlertControllerTest {
     }
 
     @Test
-    public void getPeopleCoveredReturnsOkTest() {
+    public void findChildByAddressReturnsOkTest() {
         String address = "1 rue du test unitaire";
         List<Child> mockChildList = new ArrayList<>();
         Child mockChild = new Child();
@@ -56,13 +56,40 @@ public class AlertControllerTest {
     }
 
     @Test
-    public void getPeopleCoveredReturnsNotFoundTest() {
+    public void findChildByAddressReturnsNotFoundTest() {
         String address = "15 rue du test unitaire";
         List<Child> mockChildList = new ArrayList<>();
 
         Mockito.when(alertService.findChildByAddress(address)).thenReturn(mockChildList);
 
         ResponseEntity<ApiResponse<List<Child>>> response = alertController.findChildByAdress(address);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    public void getgetPhoneNumberResidentServedReturnsOkTest() {
+        int firestation = 1;
+        List<String> mockPhoneNumberResidentCoveredList = new ArrayList<>();
+        mockPhoneNumberResidentCoveredList.add("0666678754");
+
+        Mockito.when(alertService.getPhoneNumberResidentServed(firestation)).thenReturn(mockPhoneNumberResidentCoveredList);
+
+        ResponseEntity<ApiResponse<List<String>>> response = alertController.getPhoneNumberResidentServed(firestation);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Successfully retrieved resident served phone number.", response.getBody().getMessage());
+        assertEquals(mockPhoneNumberResidentCoveredList, response.getBody().getBody());
+    }
+
+    @Test
+    public void getPhoneNumberResidentServedReturnsNotFoundTest() {
+        int firestation = 6;
+        List<String> mockPhoneNumberResidentCoveredList = new ArrayList<>();
+
+        Mockito.when(alertService.getPhoneNumberResidentServed(firestation)).thenReturn(mockPhoneNumberResidentCoveredList);
+
+        ResponseEntity<ApiResponse<List<String>>> response = alertController.getPhoneNumberResidentServed(firestation);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }

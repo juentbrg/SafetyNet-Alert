@@ -42,4 +42,22 @@ public class AlertController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping("/phoneAlert")
+    public ResponseEntity<ApiResponse<List<String>>> getPhoneNumberResidentServed(@RequestParam int firestation){
+        try {
+            List<String> phoneList = alertService.getPhoneNumberResidentServed(firestation);
+
+            if (!phoneList.isEmpty()) {
+                logger.info("Successful request for station number {}", firestation);
+                return ResponseEntity.ok(new ApiResponse<>("Successfully retrieved resident served phone number.", phoneList));
+            } else {
+                logger.error("No resident served phone number found for {}", firestation);
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            logger.error("Error processing request with {}", firestation, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
