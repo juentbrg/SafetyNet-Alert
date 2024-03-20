@@ -55,7 +55,7 @@ public class MedicalRecordRepository {
             return Optional.empty();
         } else {
             return data.getMedicalrecords().stream()
-                    .filter(medicalRecord -> medicalRecord.getFirstName().equals(firstName) && medicalRecord.getLastName().equals(lastName))
+                    .filter(medicalRecord -> medicalRecord.getFirstName().equalsIgnoreCase(firstName) && medicalRecord.getLastName().equalsIgnoreCase(lastName))
                     .findFirst();
         }
     }
@@ -77,7 +77,7 @@ public class MedicalRecordRepository {
             return;
         }
         List<MedicalRecordEntity> medicalRecords = data.getMedicalrecords();
-        medicalRecords.removeIf(medicalRecord -> medicalRecord.getFirstName().equals(firstName) && medicalRecord.getLastName().equals(lastName));
+        medicalRecords.removeIf(medicalRecord -> medicalRecord.getFirstName().equalsIgnoreCase(firstName) && medicalRecord.getLastName().equalsIgnoreCase(lastName));
         medicalRecords.add(updatedMedicalRecord);
         saveAllMedicalRecords(data);
     }
@@ -88,7 +88,7 @@ public class MedicalRecordRepository {
             logger.error("Error loading data from JSON file");
             return;
         }
-        data.getMedicalrecords().removeIf(medicalRecord -> medicalRecord.getFirstName().equals(firstName) && medicalRecord.getLastName().equals(lastName));
+        data.getMedicalrecords().removeIf(medicalRecord -> medicalRecord.getFirstName().equalsIgnoreCase(firstName) && medicalRecord.getLastName().equalsIgnoreCase(lastName));
         saveAllMedicalRecords(data);
     }
 }

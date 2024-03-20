@@ -55,7 +55,7 @@ public class FireStationRepository {
             return Optional.empty();
         } else {
             return data.getFirestations().stream()
-                    .filter(fireStation -> fireStation.getAddress().equals(address))
+                    .filter(fireStation -> fireStation.getAddress().equalsIgnoreCase(address))
                     .findFirst();
         }
     }
@@ -88,7 +88,7 @@ public class FireStationRepository {
             return;
         }
         List<FireStationEntity> fireStations = data.getFirestations();
-        fireStations.removeIf(fireStation -> fireStation.getAddress().equals(address));
+        fireStations.removeIf(fireStation -> fireStation.getAddress().equalsIgnoreCase(address));
         fireStations.add(updatedFireStation);
         saveAllFireStations(data);
     }
@@ -99,7 +99,7 @@ public class FireStationRepository {
             logger.error("Error loading data from JSON file");
             return;
         }
-        data.getFirestations().removeIf(fireStation -> fireStation.getAddress().equals(address));
+        data.getFirestations().removeIf(fireStation -> fireStation.getAddress().equalsIgnoreCase(address));
         saveAllFireStations(data);
     }
 }

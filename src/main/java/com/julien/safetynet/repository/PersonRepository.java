@@ -55,7 +55,7 @@ public class PersonRepository {
             return Optional.empty();
         } else {
             return data.getPersons().stream()
-                    .filter(person -> person.getFirstName().equals(firstName) && person.getLastName().equals(lastName))
+                    .filter(person -> person.getFirstName().equalsIgnoreCase(firstName) && person.getLastName().equalsIgnoreCase(lastName))
                     .findFirst();
         }
     }
@@ -66,7 +66,7 @@ public class PersonRepository {
             return null;
         } else {
             return data.getPersons().stream()
-                    .filter(person -> person.getAddress().equals(address))
+                    .filter(person -> person.getAddress().equalsIgnoreCase(address))
                     .toList();
         }
     }
@@ -88,7 +88,7 @@ public class PersonRepository {
             return;
         }
         List<PersonEntity> persons = data.getPersons();
-        persons.removeIf(person -> person.getFirstName().equals(firstName) && person.getLastName().equals(lastName));
+        persons.removeIf(person -> person.getFirstName().equalsIgnoreCase(firstName) && person.getLastName().equalsIgnoreCase(lastName));
         persons.add(updatedPerson);
         saveAllPersons(data);
     }
@@ -99,7 +99,7 @@ public class PersonRepository {
             logger.error("Error loading data from JSON file");
             return;
         }
-        data.getPersons().removeIf(person -> person.getFirstName().equals(firstName) && person.getLastName().equals(lastName));
+        data.getPersons().removeIf(person -> person.getFirstName().equalsIgnoreCase(firstName) && person.getLastName().equalsIgnoreCase(lastName));
         saveAllPersons(data);
     }
 }
