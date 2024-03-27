@@ -117,4 +117,22 @@ public class AlertController {
         }
     }
 
+    @GetMapping("/communityEmail")
+    public ResponseEntity<ApiResponse<List<String>>> getCommunityEmailByCity(@RequestParam String city) {
+        try {
+            List<String> emailCommunity = alertService.getCommunityEmailByCity(city);
+
+            if (!emailCommunity.isEmpty()) {
+                logger.info("Successful request for city {}", city);
+                return ResponseEntity.ok(new ApiResponse<>("Successfully retrieved community emails.", emailCommunity));
+            } else {
+                logger.error("No inhabitant found for city {}", city);
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            logger.error("Error processing request with {}", city, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 }

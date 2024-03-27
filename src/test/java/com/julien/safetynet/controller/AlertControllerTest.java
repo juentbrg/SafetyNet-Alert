@@ -186,4 +186,33 @@ public class AlertControllerTest {
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
+
+    @Test
+    public void getCommunityEmailByCityReturnsOkTest() {
+        String city = "culver";
+
+        List<String> mockEmailList = new ArrayList<>();
+        mockEmailList.add("john.doe@email.com");
+
+        Mockito.when(alertService.getCommunityEmailByCity(city)).thenReturn(mockEmailList);
+
+        ResponseEntity<ApiResponse<List<String>>> response = alertController.getCommunityEmailByCity(city);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Successfully retrieved community emails.", response.getBody().getMessage());
+        assertEquals(mockEmailList, response.getBody().getBody());
+    }
+
+    @Test
+    public void getCommunityEmailByCityReturnsNotFoundTest() {
+        String city = "cluver";
+
+        List<String> mockEmailList = new ArrayList<>();
+
+        Mockito.when(alertService.getCommunityEmailByCity(city)).thenReturn(mockEmailList);
+
+        ResponseEntity<ApiResponse<List<String>>> response = alertController.getCommunityEmailByCity(city);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
 }

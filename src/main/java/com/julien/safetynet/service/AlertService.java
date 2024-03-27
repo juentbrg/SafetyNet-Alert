@@ -200,4 +200,19 @@ public class AlertService {
         }
         return null;
     }
+
+    public List<String> getCommunityEmailByCity(String city) {
+        Set<String> emailList = new HashSet<>();
+        List<PersonEntity> personList = personRepository.findAllPersonByCity(city);
+
+        for (PersonEntity person : personList) {
+            emailList.add(person.getEmail());
+        }
+
+        if (emailList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return emailList.stream().toList();
+    }
 }

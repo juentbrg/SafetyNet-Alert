@@ -48,6 +48,18 @@ public class PersonRepository {
         }
     }
 
+    public List<PersonEntity> findAllPersonByCity(String city) {
+        Data data = loadData();
+        if (data == null) {
+            logger.error("Error loading data from JSON file");
+            return Collections.emptyList();
+        } else {
+            return data.getPersons().stream()
+                    .filter(person -> person.getCity().equalsIgnoreCase(city))
+                    .collect(Collectors.toList());
+        }
+    }
+
     public Optional<PersonEntity> findPersonByFullName(String firstName, String lastName) {
         Data data = loadData();
         if (data == null) {
