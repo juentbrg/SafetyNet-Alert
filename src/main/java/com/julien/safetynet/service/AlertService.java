@@ -5,6 +5,7 @@ import com.julien.safetynet.entity.FireStationEntity;
 import com.julien.safetynet.entity.MedicalRecordEntity;
 import com.julien.safetynet.entity.PersonEntity;
 import com.julien.safetynet.pojo.Child;
+import com.julien.safetynet.pojo.Hearth;
 import com.julien.safetynet.pojo.Inhabitant;
 import com.julien.safetynet.pojo.InhabitantWithFireStation;
 import com.julien.safetynet.repository.FireStationRepository;
@@ -117,5 +118,50 @@ public class AlertService {
         } else {
             return null;
         }
+    }
+
+    public List<Hearth> getHearthByStationNumber(List<Integer> stations) {
+        List<Hearth> hearthList = new ArrayList<>();
+        LocalDate currentDate = LocalDate.now();
+
+        for (int stationNumber : stations) {
+            List<FireStationEntity> allFireStationByStationNumber = fireStationRepository.findAllFireStationByStationNumber(stationNumber);
+            for (FireStationEntity fireStation : allFireStationByStationNumber) {
+                boolean addressProcessed = false;
+                for (Hearth hearth : hearthList) {
+                    if (hearth.getAddress().equals(fireStation.getAddress())) {
+                        addressProcessed = true;
+                        break;
+                    }
+                }
+                if (!addressProcessed) {
+                    List<PersonEntity> personList = personRepository.findAllPersonByAddress(fireStation.getAddress());
+                    List<Inhabitant> inhabitantList = new ArrayList<>();
+                    Hearth hearth = new Hearth();
+                    hearth.setAddress(fireStation.getAddress());
+                    for (PersonEntity person : personList) {
+                        Optional<MedicalRecordEntity> medicalRecordOpt = medicalRecordRepository.findMedicalRecordByFullName(person.getFirstName(), person.getLastName());
+                        if (medicalRecordOpt.isPresent()) {
+                            LocalDate birthdate = LocalDate.parse(medicalRecordOpt.get().getBirthdate(), DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+                            int age = Period.between(birthdate, currentDate).getYears();
+                            Inhabitant inhabitant = new Inhabitant();
+                            inhabitant.setFirstName(person.getFirstName());
+                            inhabitant.setLastName(person.getLastName());
+                            inhabitant.setPhoneNumber(person.getPhone());
+                            inhabitant.setAge(age);
+                            inhabitant.setMedication(medicalRecordOpt.get().getMedications());
+                            inhabitant.setAllergies(medicalRecordOpt.get().getAllergies());
+                            inhabitantList.add(inhabitant);
+                        }
+                    }
+                    hearth.setInhabitantList(inhabitantList);
+                    hearthList.add(hearth);
+                }
+            }
+        }
+        if (hearthList.isEmpty()){
+            return Collections.emptyList();
+        }
+        return hearthList;
     }
 }

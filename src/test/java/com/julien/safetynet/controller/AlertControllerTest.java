@@ -2,6 +2,7 @@ package com.julien.safetynet.controller;
 
 import com.julien.safetynet.DTO.PersonCoveredDTO;
 import com.julien.safetynet.pojo.Child;
+import com.julien.safetynet.pojo.Hearth;
 import com.julien.safetynet.pojo.InhabitantWithFireStation;
 import com.julien.safetynet.service.AlertService;
 import com.julien.safetynet.utils.ApiResponse;
@@ -116,6 +117,39 @@ public class AlertControllerTest {
         Mockito.when(alertService.getInhabitantAndFireStationByAddress(address)).thenReturn(null);
 
         ResponseEntity<ApiResponse<InhabitantWithFireStation>> response = alertController.getInhabitantAndFireStationByAddress(address);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    public void getHearthByStationNumberReturnsOkTest() {
+        List<Integer> stationList = new ArrayList<>();
+        stationList.add(1);
+        stationList.add(2);
+
+        List<Hearth> mockHearthList = new ArrayList<>();
+        mockHearthList.add(new Hearth());
+
+        Mockito.when(alertService.getHearthByStationNumber(stationList)).thenReturn(mockHearthList);
+
+        ResponseEntity<ApiResponse<List<Hearth>>> response = alertController.getHearthByStationNumber(stationList);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Successfully retrieved hearth list.", response.getBody().getMessage());
+        assertEquals(mockHearthList, response.getBody().getBody());
+    }
+
+    @Test
+    public void getHearthByStationNumberReturnsNotFoundTest() {
+        List<Integer> stationList = new ArrayList<>();
+        stationList.add(8);
+        stationList.add(10);
+
+        List<Hearth> mockHearthList = new ArrayList<>();
+
+        Mockito.when(alertService.getHearthByStationNumber(stationList)).thenReturn(mockHearthList);
+
+        ResponseEntity<ApiResponse<List<Hearth>>> response = alertController.getHearthByStationNumber(stationList);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }

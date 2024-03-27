@@ -1,6 +1,7 @@
 package com.julien.safetynet.controller;
 
 import com.julien.safetynet.pojo.Child;
+import com.julien.safetynet.pojo.Hearth;
 import com.julien.safetynet.pojo.InhabitantWithFireStation;
 import com.julien.safetynet.service.AlertService;
 import com.julien.safetynet.utils.ApiResponse;
@@ -75,6 +76,24 @@ public class AlertController {
             }
         } catch (Exception e) {
             logger.error("Error processing request with {}", address, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/flood/stations")
+    public ResponseEntity<ApiResponse<List<Hearth>>> getHearthByStationNumber(@RequestParam List<Integer> stations) {
+        try {
+            List<Hearth> hearthList = alertService.getHearthByStationNumber(stations);
+
+            if (!hearthList.isEmpty()) {
+                logger.info("Successful request for stations number {}", stations);
+                return ResponseEntity.ok(new ApiResponse<>("Successfully retrieved hearth list.", hearthList));
+            } else {
+                logger.error("No hearth found for stations {}", stations);
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            logger.error("Error processing request with {}", stations, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
