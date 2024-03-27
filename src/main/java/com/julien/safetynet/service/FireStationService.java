@@ -33,48 +33,6 @@ public class FireStationService {
         return fireStationOpt.orElse(null);
     }
 
-    public PersonCovered getPersonCovered(int stationNumber) {
-        PersonCovered personCovered = new PersonCovered();
-        List<FireStationEntity> fireStationList = fireStationRepository.findAllFireStationByStationNumber(stationNumber);
-        Set<PersonCoveredDTO> personCoveredDTOSet = new HashSet<>();
-        int childNumber = 0;
-        int adultNumber = 0;
-        LocalDate currentDate = LocalDate.now();
-
-
-        for (FireStationEntity fireStation : fireStationList) {
-            String address = fireStation.getAddress();
-            List<PersonEntity> listPersonsEntity = personRepository.findAllPersonByAddress(address);
-            for (PersonEntity person : listPersonsEntity) {
-                PersonCoveredDTO personCoveredDTO = new PersonCoveredDTO(person);
-                personCoveredDTOSet.add(personCoveredDTO);
-            }
-        }
-
-        for (PersonCoveredDTO personCoveredDTO : personCoveredDTOSet) {
-            Optional<MedicalRecordEntity> medicalRecordOpt = medicalRecordRepository.findMedicalRecordByFullName(personCoveredDTO.getFirstName(), personCoveredDTO.getLastName());
-            if (medicalRecordOpt.isPresent()){
-                LocalDate birthdate = LocalDate.parse(medicalRecordOpt.get().getBirthdate(), DateTimeFormatter.ofPattern("MM/dd/yyyy"));
-
-                if (Period.between(birthdate, currentDate).getYears() < 18) {
-                    childNumber++;
-                } else {
-                    adultNumber++;
-                }
-            }
-        }
-
-        if (!personCoveredDTOSet.isEmpty()) {
-            personCovered.setPersonCovered(personCoveredDTOSet.stream().toList());
-            personCovered.setAdultNumber(adultNumber);
-            personCovered.setChildrenNumber(childNumber);
-
-            return personCovered;
-        } else {
-            return null;
-        }
-    }
-
     public boolean addFireStation(FireStationEntity fireStationEntity) {
         try {
             fireStationRepository.addFireStation(fireStationEntity);

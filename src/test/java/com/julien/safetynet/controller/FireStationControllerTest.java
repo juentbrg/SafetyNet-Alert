@@ -69,44 +69,6 @@ public class FireStationControllerTest {
     }
 
     @Test
-    public void getPeopleCoveredReturnsOkTest() {
-        int stationNumber = 1;
-        PersonCovered mockPersonCovered = new PersonCovered();
-        List<PersonCoveredDTO> mockPersonCoveredDTOList = new ArrayList<>();
-        PersonCoveredDTO mockPersonCoveredDTO = new PersonCoveredDTO();
-
-        mockPersonCoveredDTO.setFirstName("John");
-        mockPersonCoveredDTO.setLastName("Doe");
-        mockPersonCoveredDTO.setAddress("1 rue du test unitaire");
-        mockPersonCoveredDTO.setPhone("0676543421");
-
-        mockPersonCoveredDTOList.add(mockPersonCoveredDTO);
-
-        mockPersonCovered.setPersonCovered(mockPersonCoveredDTOList);
-        mockPersonCovered.setAdultNumber(3);
-        mockPersonCovered.setChildrenNumber(3);
-
-        Mockito.when(fireStationService.getPersonCovered(stationNumber)).thenReturn(mockPersonCovered);
-
-        ResponseEntity<ApiResponse<PersonCovered>> response = fireStationController.getPeopleCovered(stationNumber);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Successfully retrieved covered persons.", response.getBody().getMessage());
-        assertEquals(mockPersonCoveredDTOList, response.getBody().getBody().getPersonCovered());
-    }
-
-    @Test
-    public void getPeopleCoveredReturnsNotFoundTest() {
-        int stationNumber = 6;
-
-        Mockito.when(fireStationService.getPersonCovered(stationNumber)).thenReturn(null);
-
-        ResponseEntity<ApiResponse<PersonCovered>> response = fireStationController.getPeopleCovered(stationNumber);
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-    }
-
-    @Test
     public void addFireStationReturnsOkTest() {
         FireStationEntity mockFireStationEntity = new FireStationEntity();
 

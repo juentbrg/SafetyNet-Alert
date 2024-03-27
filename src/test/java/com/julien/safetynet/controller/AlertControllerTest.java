@@ -1,10 +1,7 @@
 package com.julien.safetynet.controller;
 
 import com.julien.safetynet.DTO.PersonCoveredDTO;
-import com.julien.safetynet.pojo.Child;
-import com.julien.safetynet.pojo.Hearth;
-import com.julien.safetynet.pojo.InhabitantWithEmail;
-import com.julien.safetynet.pojo.InhabitantWithFireStation;
+import com.julien.safetynet.pojo.*;
 import com.julien.safetynet.service.AlertService;
 import com.julien.safetynet.utils.ApiResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +31,44 @@ public class AlertControllerTest {
     }
 
     @Test
+    public void getPeopleCoveredReturnsOkTest() {
+        int stationNumber = 1;
+        PersonCovered mockPersonCovered = new PersonCovered();
+        List<PersonCoveredDTO> mockPersonCoveredDTOList = new ArrayList<>();
+        PersonCoveredDTO mockPersonCoveredDTO = new PersonCoveredDTO();
+
+        mockPersonCoveredDTO.setFirstName("John");
+        mockPersonCoveredDTO.setLastName("Doe");
+        mockPersonCoveredDTO.setAddress("1 rue du test unitaire");
+        mockPersonCoveredDTO.setPhone("0676543421");
+
+        mockPersonCoveredDTOList.add(mockPersonCoveredDTO);
+
+        mockPersonCovered.setPersonCovered(mockPersonCoveredDTOList);
+        mockPersonCovered.setAdultNumber(3);
+        mockPersonCovered.setChildrenNumber(3);
+
+        Mockito.when(alertService.getPersonCovered(stationNumber)).thenReturn(mockPersonCovered);
+
+        ResponseEntity<ApiResponse<PersonCovered>> response = alertController.getPeopleCovered(stationNumber);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Successfully retrieved covered persons.", response.getBody().getMessage());
+        assertEquals(mockPersonCoveredDTOList, response.getBody().getBody().getPersonCovered());
+    }
+
+    @Test
+    public void getPeopleCoveredReturnsNotFoundTest() {
+        int stationNumber = 6;
+
+        Mockito.when(alertService.getPersonCovered(stationNumber)).thenReturn(null);
+
+        ResponseEntity<ApiResponse<PersonCovered>> response = alertController.getPeopleCovered(stationNumber);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
     public void findChildByAddressReturnsOkTest() {
         String address = "1 rue du test unitaire";
         List<Child> mockChildList = new ArrayList<>();
@@ -56,6 +91,16 @@ public class AlertControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Successfully retrieved children.", response.getBody().getMessage());
         assertEquals(mockChildList, response.getBody().getBody());
+    }
+
+    @Test
+    public void findChildByAddressReturnsBadRequestTest() {
+        String address = "";
+
+        ResponseEntity<ApiResponse<List<Child>>> response = alertController.findChildByAdress(address);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Address field is missing.", response.getBody().getMessage());
     }
 
     @Test
@@ -109,6 +154,16 @@ public class AlertControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Successfully retrieved inhabitant list.", response.getBody().getMessage());
         assertEquals(mockInhabitantWithFireStation, response.getBody().getBody());
+    }
+
+    @Test
+    public void getInhabitantAndFireStationByAddressReturnsBadRequestTest() {
+        String address = "";
+
+        ResponseEntity<ApiResponse<InhabitantWithFireStation>> response = alertController.getInhabitantAndFireStationByAddress(address);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Address field is missing.", response.getBody().getMessage());
     }
 
     @Test
@@ -174,6 +229,17 @@ public class AlertControllerTest {
     }
 
     @Test
+    public void getInhabitantByFullNameReturnsBadRequestTest() {
+        String firstName = "John";
+        String lastName = "";
+
+        ResponseEntity<ApiResponse<List<InhabitantWithEmail>>> response = alertController.getInhabitantByFullName(firstName, lastName);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Firstname or lastname field is missing.", response.getBody().getMessage());
+    }
+
+    @Test
     public void getInhabitantByFullNameReturnsNotFoundTest() {
         String firstName = "John";
         String lastName = "Doe";
@@ -201,6 +267,16 @@ public class AlertControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Successfully retrieved community emails.", response.getBody().getMessage());
         assertEquals(mockEmailList, response.getBody().getBody());
+    }
+
+    @Test
+    public void getCommunityEmailByCityReturnsBadRequestTest() {
+        String city = "";
+
+        ResponseEntity<ApiResponse<List<String>>> response = alertController.getCommunityEmailByCity(city);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("City field is missing.", response.getBody().getMessage());
     }
 
     @Test

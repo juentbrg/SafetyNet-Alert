@@ -46,24 +46,6 @@ public class FireStationController {
         }
     }
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<PersonCovered>> getPeopleCovered(@RequestParam int stationNumber) {
-        try {
-            PersonCovered personCovered = fireStationService.getPersonCovered(stationNumber);
-
-            if (null != personCovered) {
-                logger.info("Successful request for station number {}", stationNumber);
-                return ResponseEntity.ok(new ApiResponse<>("Successfully retrieved covered persons.", personCovered));
-            } else {
-                logger.error("No covered persons found for {}", stationNumber);
-                return ResponseEntity.notFound().build();
-            }
-        } catch (Exception e) {
-            logger.error("Error processing request with {}", stationNumber, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
     @PostMapping("/add")
     public ResponseEntity<ApiResponse<Void>> addFireStation(@RequestBody FireStationEntity firestationEntity) {
         boolean created = fireStationService.addFireStation(firestationEntity);

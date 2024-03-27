@@ -1,9 +1,6 @@
 package com.julien.safetynet.controller;
 
-import com.julien.safetynet.pojo.Child;
-import com.julien.safetynet.pojo.Hearth;
-import com.julien.safetynet.pojo.InhabitantWithEmail;
-import com.julien.safetynet.pojo.InhabitantWithFireStation;
+import com.julien.safetynet.pojo.*;
 import com.julien.safetynet.service.AlertService;
 import com.julien.safetynet.utils.ApiResponse;
 import org.slf4j.Logger;
@@ -27,8 +24,29 @@ public class AlertController {
         this.alertService = alertService;
     }
 
+    @GetMapping
+    public ResponseEntity<ApiResponse<PersonCovered>> getPeopleCovered(@RequestParam int stationNumber) {
+        try {
+            PersonCovered personCovered = alertService.getPersonCovered(stationNumber);
+
+            if (null != personCovered) {
+                logger.info("Successful request for station number {}", stationNumber);
+                return ResponseEntity.ok(new ApiResponse<>("Successfully retrieved covered persons.", personCovered));
+            } else {
+                logger.error("No covered persons found for {}", stationNumber);
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            logger.error("Error processing request with {}", stationNumber, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @GetMapping("/childAlert")
     public ResponseEntity<ApiResponse<List<Child>>> findChildByAdress(@RequestParam String address){
+        if (address.isEmpty()) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>("Address field is missing.", null));
+        }
         try {
             List<Child> childList = alertService.findChildByAddress(address);
 
@@ -65,6 +83,9 @@ public class AlertController {
 
     @GetMapping("/fire")
     public ResponseEntity<ApiResponse<InhabitantWithFireStation>> getInhabitantAndFireStationByAddress(@RequestParam String address){
+        if (address.isEmpty()) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>("Address field is missing.", null));
+        }
         try {
             InhabitantWithFireStation inhabitantAndFireStation = alertService.getInhabitantAndFireStationByAddress(address);
 
@@ -101,6 +122,9 @@ public class AlertController {
 
     @GetMapping("/personInfo")
     public ResponseEntity<ApiResponse<List<InhabitantWithEmail>>> getInhabitantByFullName(@RequestParam String firstName, @RequestParam String lastName) {
+        if (firstName.isEmpty() || lastName.isEmpty()) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>("Firstname or lastname field is missing.", null));
+        }
         try {
             List<InhabitantWithEmail> inhabitantList = alertService.getInhabitantByFullName(firstName, lastName);
 
@@ -119,6 +143,9 @@ public class AlertController {
 
     @GetMapping("/communityEmail")
     public ResponseEntity<ApiResponse<List<String>>> getCommunityEmailByCity(@RequestParam String city) {
+        if (city.isEmpty()) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>("City field is missing.", null));
+        }
         try {
             List<String> emailCommunity = alertService.getCommunityEmailByCity(city);
 
