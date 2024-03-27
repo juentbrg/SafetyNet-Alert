@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 public class PersonControllerTest {
 
@@ -36,21 +37,10 @@ public class PersonControllerTest {
         String lastName = "Doe";
 
         PersonEntity mockPerson = new PersonEntity();
-        mockPerson.setFirstName(firstName);
-        mockPerson.setLastName(lastName);
-        mockPerson.setAddress("1 rue Pierre et Marie Curie");
-        mockPerson.setCity("Paris");
-        mockPerson.setZip("75016");
-        mockPerson.setPhone("0677543369");
-        mockPerson.setEmail("john.doe@mail.com");
-
-        Map<String, String> requestMap = new HashMap<>();
-        requestMap.put("firstName", firstName);
-        requestMap.put("lastName", lastName);
 
         Mockito.when(personService.getPersonByFullName(firstName, lastName)).thenReturn(mockPerson);
 
-        ResponseEntity<ApiResponse<PersonEntity>> response = personController.getPersonByFullName(requestMap);
+        ResponseEntity<ApiResponse<PersonEntity>> response = personController.getPersonByFullName(firstName, lastName);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Successfully retrieved person.", response.getBody().getMessage());
@@ -58,15 +48,21 @@ public class PersonControllerTest {
     }
 
     @Test
-    public void getPersonByFullNameReturnsBadRequestTest() {
+    public void getPersonMissingLastNameReturnsBadRequestTest() {
         String firstName = "John";
         String lastName = "";
 
-        Map<String, String> requestMap = new HashMap<>();
-        requestMap.put("firstName", firstName);
-        requestMap.put("lastName", lastName);
+        ResponseEntity<ApiResponse<PersonEntity>> response = personController.getPersonByFullName(firstName, lastName);
 
-        ResponseEntity<ApiResponse<PersonEntity>> response = personController.getPersonByFullName(requestMap);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Invalid request: Parameters firstName and lastName cannot be empty.", response.getBody().getMessage());
+    }
+    @Test
+    public void getPersonMissingFirstNameReturnsBadRequestTest() {
+        String firstName = "";
+        String lastName = "Doe";
+
+        ResponseEntity<ApiResponse<PersonEntity>> response = personController.getPersonByFullName(firstName, lastName);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Invalid request: Parameters firstName and lastName cannot be empty.", response.getBody().getMessage());
@@ -77,15 +73,23 @@ public class PersonControllerTest {
         String firstName = "John";
         String lastName = "Doe";
 
-        Map<String, String> requestMap = new HashMap<>();
-        requestMap.put("firstName", firstName);
-        requestMap.put("lastName", lastName);
-
         Mockito.when(personService.getPersonByFullName(firstName, lastName)).thenReturn(null);
 
-        ResponseEntity<ApiResponse<PersonEntity>> response = personController.getPersonByFullName(requestMap);
+        ResponseEntity<ApiResponse<PersonEntity>> response = personController.getPersonByFullName(firstName, lastName);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    public void getPersonByFullNameReturnsInternalServerErrorTest() {
+        String firstName = "John";
+        String lastName = "Doe";
+
+        when(personService.getPersonByFullName(firstName, lastName)).thenThrow(new RuntimeException("Exception test"));
+
+        ResponseEntity<ApiResponse<PersonEntity>> responseEntity = personController.getPersonByFullName(firstName, lastName);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
     }
 
     @Test
@@ -113,17 +117,37 @@ public class PersonControllerTest {
     }
 
     @Test
-    public void updatePersonReturnsBadRequestTest() {
+    public void addPersonReturnsInternalServerErrorTest() {
+        PersonEntity mockPerson = new PersonEntity();
+
+        when(personService.addPerson(mockPerson)).thenThrow(new RuntimeException("Exception test"));
+
+        ResponseEntity<ApiResponse<Void>> responseEntity = personController.addPerson(mockPerson);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void updatePersonMissingLastNameReturnsBadRequestTest() {
         String firstName = "John";
         String lastName = "";
 
         PersonEntity mockPerson = new PersonEntity();
 
-        Map<String, String> requestMap = new HashMap<>();
-        requestMap.put("firstName", firstName);
-        requestMap.put("lastName", lastName);
+        ResponseEntity<ApiResponse<Void>> response = personController.updatePerson(firstName, lastName, mockPerson);
 
-        ResponseEntity<ApiResponse<Void>> response = personController.updatePerson(requestMap, mockPerson);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Invalid request: firstName or lastName cannot be empty.", response.getBody().getMessage());
+    }
+
+    @Test
+    public void updatePersonMissingFirstNameReturnsBadRequestTest() {
+        String firstName = "";
+        String lastName = "Doe";
+
+        PersonEntity mockPerson = new PersonEntity();
+
+        ResponseEntity<ApiResponse<Void>> response = personController.updatePerson(firstName, lastName, mockPerson);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Invalid request: firstName or lastName cannot be empty.", response.getBody().getMessage());
@@ -136,13 +160,9 @@ public class PersonControllerTest {
 
         PersonEntity mockPerson = new PersonEntity();
 
-        Map<String, String> requestMap = new HashMap<>();
-        requestMap.put("firstName", firstName);
-        requestMap.put("lastName", lastName);
-
         Mockito.when(personService.updatePerson(firstName, lastName, mockPerson)).thenReturn(true);
 
-        ResponseEntity<ApiResponse<Void>> response = personController.updatePerson(requestMap, mockPerson);
+        ResponseEntity<ApiResponse<Void>> response = personController.updatePerson(firstName, lastName, mockPerson);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Person successfully updated.", response.getBody().getMessage());
@@ -155,27 +175,44 @@ public class PersonControllerTest {
 
         PersonEntity mockPerson = new PersonEntity();
 
-        Map<String, String> requestMap = new HashMap<>();
-        requestMap.put("firstName", firstName);
-        requestMap.put("lastName", lastName);
-
         Mockito.when(personService.updatePerson(firstName, lastName, mockPerson)).thenReturn(false);
 
-        ResponseEntity<ApiResponse<Void>> response = personController.updatePerson(requestMap, mockPerson);
+        ResponseEntity<ApiResponse<Void>> response = personController.updatePerson(firstName, lastName, mockPerson);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
-    public void deletePersonReturnsBadRequestTest() {
+    public void updatePersonReturnsInternalServerErrorTest() {
+        String firstName = "John";
+        String lastName = "Doe";
+
+        PersonEntity mockPerson = new PersonEntity();
+
+        when(personService.updatePerson(firstName, lastName, mockPerson)).thenThrow(new RuntimeException("Exception test"));
+
+        ResponseEntity<ApiResponse<Void>> responseEntity = personController.updatePerson(firstName, lastName, mockPerson);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void deletePersonMissingLastNameReturnsBadRequestTest() {
         String firstName = "John";
         String lastName = "";
 
-        Map<String, String> requestMap = new HashMap<>();
-        requestMap.put("firstName", firstName);
-        requestMap.put("lastName", lastName);
+        ResponseEntity<ApiResponse<Void>> response = personController.deletePerson(firstName, lastName);
 
-        ResponseEntity<ApiResponse<Void>> response = personController.deletePerson(requestMap);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Invalid request: firstName and lastName cannot be empty.", response.getBody().getMessage());
+    }
+
+    @Test
+    public void deletePersonMissingFirstNameReturnsBadRequestTest() {
+        String firstName = "";
+        String lastName = "Doe";
+
+        ResponseEntity<ApiResponse<Void>> response = personController.deletePerson(firstName, lastName);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Invalid request: firstName and lastName cannot be empty.", response.getBody().getMessage());
@@ -186,13 +223,9 @@ public class PersonControllerTest {
         String firstName = "John";
         String lastName = "Doe";
 
-        Map<String, String> requestMap = new HashMap<>();
-        requestMap.put("firstName", firstName);
-        requestMap.put("lastName", lastName);
-
         Mockito.when(personService.deletePerson(firstName, lastName)).thenReturn(true);
 
-        ResponseEntity<ApiResponse<Void>> response = personController.deletePerson(requestMap);
+        ResponseEntity<ApiResponse<Void>> response = personController.deletePerson(firstName, lastName);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Person successfully deleted.", response.getBody().getMessage());
@@ -203,15 +236,23 @@ public class PersonControllerTest {
         String firstName = "John";
         String lastName = "Doe";
 
-        Map<String, String> requestMap = new HashMap<>();
-        requestMap.put("firstName", firstName);
-        requestMap.put("lastName", lastName);
-
         Mockito.when(personService.deletePerson(firstName, lastName)).thenReturn(false);
 
-        ResponseEntity<ApiResponse<Void>> response = personController.deletePerson(requestMap);
+        ResponseEntity<ApiResponse<Void>> response = personController.deletePerson(firstName, lastName);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    public void deletePersonReturnsInternalServerErrorTest() {
+        String firstName = "John";
+        String lastName = "Doe";
+
+        when(personService.deletePerson(firstName, lastName)).thenThrow(new RuntimeException("Exception test"));
+
+        ResponseEntity<ApiResponse<Void>> responseEntity = personController.deletePerson(firstName, lastName);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
     }
 }
 

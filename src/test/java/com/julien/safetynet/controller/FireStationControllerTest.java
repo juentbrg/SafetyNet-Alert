@@ -1,8 +1,6 @@
 package com.julien.safetynet.controller;
 
-import com.julien.safetynet.DTO.PersonCoveredDTO;
 import com.julien.safetynet.entity.FireStationEntity;
-import com.julien.safetynet.pojo.PersonCovered;
 import com.julien.safetynet.service.FireStationService;
 import com.julien.safetynet.utils.ApiResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,10 +12,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 public class FireStationControllerTest {
     @Mock
@@ -69,6 +65,17 @@ public class FireStationControllerTest {
     }
 
     @Test
+    public void getFireStationByAddressReturnsInternalServerErrorTest() {
+        String address = "15 rue du test unitaire";
+
+        when(fireStationService.getFireStationByAddress(address)).thenThrow(new RuntimeException("Exception test"));
+
+        ResponseEntity<ApiResponse<FireStationEntity>> responseEntity = fireStationController.getFireStationByAddress(address);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
+
+    @Test
     public void addFireStationReturnsOkTest() {
         FireStationEntity mockFireStationEntity = new FireStationEntity();
 
@@ -90,6 +97,17 @@ public class FireStationControllerTest {
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Unable to add new fire station.", response.getBody().getMessage());
+    }
+
+    @Test
+    public void addFireStationReturnsInternalServerErrorTest() {
+        FireStationEntity mockFireStationEntity = new FireStationEntity();
+
+        when(fireStationService.addFireStation(mockFireStationEntity)).thenThrow(new RuntimeException("Exception test"));
+
+        ResponseEntity<ApiResponse<Void>> responseEntity = fireStationController.addFireStation(mockFireStationEntity);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
     }
 
     @Test
@@ -134,6 +152,19 @@ public class FireStationControllerTest {
     }
 
     @Test
+    public void updateFireStationReturnsInternalServerErrorTest() {
+        String address = "1 rue du test unitaire";
+
+        FireStationEntity mockFireStationEntity = new FireStationEntity();
+
+        when(fireStationService.updateFireStation(address, mockFireStationEntity)).thenThrow(new RuntimeException("Exception test"));
+
+        ResponseEntity<ApiResponse<Void>> responseEntity = fireStationController.updateFireStation(address, mockFireStationEntity);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
+
+    @Test
     public void deleteFireStationReturnsBadRequestTest() {
         String address = "";
 
@@ -164,5 +195,16 @@ public class FireStationControllerTest {
         ResponseEntity<ApiResponse<Void>> response = fireStationController.deleteFireStation(address);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    public void deleteFireStationReturnsInternalServerErrorTest() {
+        String address = "1 rue du test unitaire";
+
+        when(fireStationService.deleteFireStation(address)).thenThrow(new RuntimeException("Exception test"));
+
+        ResponseEntity<ApiResponse<Void>> responseEntity = fireStationController.deleteFireStation(address);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
     }
 }

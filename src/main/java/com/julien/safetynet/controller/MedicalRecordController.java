@@ -25,9 +25,7 @@ public class MedicalRecordController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<ApiResponse<MedicalRecordEntity>> getMedicalRecordByFullName(@RequestParam Map<String, String> requestMap) {
-        String firstName = requestMap.get("firstName");
-        String lastName = requestMap.get("lastName");
+    public ResponseEntity<ApiResponse<MedicalRecordEntity>> getMedicalRecordByFullName(@RequestParam String firstName, @RequestParam String lastName) {
         try {
             if (StringUtils.isBlank(firstName) || StringUtils.isBlank(lastName)) {
                 logger.error("Invalid request: firstName or lastName cannot be empty.");
@@ -51,8 +49,8 @@ public class MedicalRecordController {
 
     @PostMapping("/add")
     public ResponseEntity<ApiResponse<Void>> addMedicalRecord(@RequestBody MedicalRecordEntity medicalRecordEntity) {
-        boolean created = medicalRecordService.addMedicalRecord(medicalRecordEntity);
         try {
+            boolean created = medicalRecordService.addMedicalRecord(medicalRecordEntity);
             if (created) {
                 logger.info("Medical record successfully added");
                 return ResponseEntity.ok(new ApiResponse<>("Medical record successfully added.", null));
@@ -67,12 +65,9 @@ public class MedicalRecordController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<ApiResponse<Void>> updateMedicalRecord(@RequestParam Map<String, String> requestMap, @RequestBody MedicalRecordEntity medicalRecordEntity) {
-        String firstName = requestMap.get("firstName");
-        String lastName = requestMap.get("lastName");
-        boolean updated = medicalRecordService.updateMedicalRecord(firstName, lastName, medicalRecordEntity);
-
+    public ResponseEntity<ApiResponse<Void>> updateMedicalRecord(@RequestParam String firstName, @RequestParam String lastName, @RequestBody MedicalRecordEntity medicalRecordEntity) {
         try {
+            boolean updated = medicalRecordService.updateMedicalRecord(firstName, lastName, medicalRecordEntity);
             if (StringUtils.isBlank(firstName) || StringUtils.isBlank(lastName)) {
                 logger.error("Invalid request: firstName or lastName cannot be empty.");
                 return ResponseEntity.badRequest().body(new ApiResponse<>("Invalid request: firstName or lastName cannot be empty.", null));
@@ -93,12 +88,9 @@ public class MedicalRecordController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<ApiResponse<Void>> deleteMedicalRecord(@RequestParam Map<String, String> requestMap) {
-        String firstName = requestMap.get("firstName");
-        String lastName = requestMap.get("lastName");
-        boolean deleted = medicalRecordService.deleteMedicalRecord(firstName, lastName);
-
+    public ResponseEntity<ApiResponse<Void>> deleteMedicalRecord(@RequestParam String firstName, String lastName) {
         try {
+            boolean deleted = medicalRecordService.deleteMedicalRecord(firstName, lastName);
             if (StringUtils.isBlank(firstName) || StringUtils.isBlank(lastName)) {
                 logger.error("Invalid request: firstName or lastName cannot be empty.");
                 return ResponseEntity.badRequest().body(new ApiResponse<>("Invalid request: firstName or lastName cannot be empty.", null));

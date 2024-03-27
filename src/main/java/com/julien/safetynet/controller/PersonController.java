@@ -10,8 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/v1/person")
 public class PersonController {
@@ -25,9 +23,7 @@ public class PersonController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<ApiResponse<PersonEntity>> getPersonByFullName(@RequestParam Map<String, String> requestMap) {
-        String firstName = requestMap.get("firstName");
-        String lastName = requestMap.get("lastName");
+    public ResponseEntity<ApiResponse<PersonEntity>> getPersonByFullName(@RequestParam String firstName, String lastName) {
         try {
             if (StringUtils.isBlank(firstName) || StringUtils.isBlank(lastName)) {
                 logger.error("Invalid request: firstName or lastName cannot be empty.");
@@ -51,8 +47,8 @@ public class PersonController {
 
     @PostMapping("/add")
     public ResponseEntity<ApiResponse<Void>> addPerson(@RequestBody PersonEntity personEntity) {
-        boolean created = personService.addPerson(personEntity);
         try {
+            boolean created = personService.addPerson(personEntity);
             if (created) {
                 logger.info("Person successfully created");
                 return ResponseEntity.ok(new ApiResponse<>("Person successfully created.", null));
@@ -67,12 +63,9 @@ public class PersonController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<ApiResponse<Void>> updatePerson(@RequestParam Map<String, String> requestMap, @RequestBody PersonEntity personEntity) {
-        String firstName = requestMap.get("firstName");
-        String lastName = requestMap.get("lastName");
-        boolean updated = personService.updatePerson(firstName, lastName, personEntity);
-
+    public ResponseEntity<ApiResponse<Void>> updatePerson(@RequestParam String firstName, @RequestParam String lastName, @RequestBody PersonEntity personEntity) {
         try {
+            boolean updated = personService.updatePerson(firstName, lastName, personEntity);
             if (StringUtils.isBlank(firstName) || StringUtils.isBlank(lastName)) {
                 logger.error("Invalid request: firstName or lastName cannot be empty.");
                 return ResponseEntity.badRequest().body(new ApiResponse<>("Invalid request: firstName or lastName cannot be empty.", null));
@@ -93,12 +86,9 @@ public class PersonController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<ApiResponse<Void>> deletePerson(@RequestParam Map<String, String> requestMap) {
-        String firstName = requestMap.get("firstName");
-        String lastName = requestMap.get("lastName");
-        boolean deleted = personService.deletePerson(firstName, lastName);
-
+    public ResponseEntity<ApiResponse<Void>> deletePerson(@RequestParam String firstName, @RequestParam String lastName) {
         try {
+            boolean deleted = personService.deletePerson(firstName, lastName);
             if (StringUtils.isBlank(firstName) || StringUtils.isBlank(lastName)) {
                 logger.error("Invalid request: firstName and lastName cannot be empty.");
                 return ResponseEntity.badRequest().body(new ApiResponse<>("Invalid request: firstName and lastName cannot be empty.", null));

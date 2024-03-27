@@ -12,10 +12,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 public class MedicalRecordControllerTest {
 
@@ -40,14 +38,9 @@ public class MedicalRecordControllerTest {
         mockMedicalRecord.setLastName(lastName);
         mockMedicalRecord.setBirthdate("22/01/2000");
 
-
-        Map<String, String> requestMap = new HashMap<>();
-        requestMap.put("firstName", firstName);
-        requestMap.put("lastName", lastName);
-
         Mockito.when(medicalRecordService.getMedicalRecordByFullName(firstName, lastName)).thenReturn(mockMedicalRecord);
 
-        ResponseEntity<ApiResponse<MedicalRecordEntity>> response = medicalRecordController.getMedicalRecordByFullName(requestMap);
+        ResponseEntity<ApiResponse<MedicalRecordEntity>> response = medicalRecordController.getMedicalRecordByFullName(firstName, lastName);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Successfully retrieved medical record.", response.getBody().getMessage());
@@ -55,15 +48,22 @@ public class MedicalRecordControllerTest {
     }
 
     @Test
-    public void getMedicalRecordByFullNameReturnsBadRequestTest() {
+    public void getMedicalMissingLastNameReturnsBadRequestTest() {
         String firstName = "John";
         String lastName = "";
 
-        Map<String, String> requestMap = new HashMap<>();
-        requestMap.put("firstName", firstName);
-        requestMap.put("lastName", lastName);
+        ResponseEntity<ApiResponse<MedicalRecordEntity>> response = medicalRecordController.getMedicalRecordByFullName(firstName, lastName);
 
-        ResponseEntity<ApiResponse<MedicalRecordEntity>> response = medicalRecordController.getMedicalRecordByFullName(requestMap);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Invalid request: Parameters firstName or lastName cannot be empty.", response.getBody().getMessage());
+    }
+
+    @Test
+    public void getMedicalMissingFirstNameReturnsBadRequestTest() {
+        String firstName = "";
+        String lastName = "Doe";
+
+        ResponseEntity<ApiResponse<MedicalRecordEntity>> response = medicalRecordController.getMedicalRecordByFullName(firstName, lastName);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Invalid request: Parameters firstName or lastName cannot be empty.", response.getBody().getMessage());
@@ -74,15 +74,23 @@ public class MedicalRecordControllerTest {
         String firstName = "John";
         String lastName = "Doe";
 
-        Map<String, String> requestMap = new HashMap<>();
-        requestMap.put("firstName", firstName);
-        requestMap.put("lastName", lastName);
-
         Mockito.when(medicalRecordService.getMedicalRecordByFullName(firstName, lastName)).thenReturn(null);
 
-        ResponseEntity<ApiResponse<MedicalRecordEntity>> response = medicalRecordController.getMedicalRecordByFullName(requestMap);
+        ResponseEntity<ApiResponse<MedicalRecordEntity>> response = medicalRecordController.getMedicalRecordByFullName(firstName, lastName);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    public void getMedicalRecordByFullNameReturnsInternalServerErrorTest() {
+        String firstName = "John";
+        String lastName = "Doe";
+
+        when(medicalRecordService.getMedicalRecordByFullName(firstName, lastName)).thenThrow(new RuntimeException("Exception test"));
+
+        ResponseEntity<ApiResponse<MedicalRecordEntity>> responseEntity = medicalRecordController.getMedicalRecordByFullName(firstName, lastName);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
     }
 
     @Test
@@ -110,17 +118,37 @@ public class MedicalRecordControllerTest {
     }
 
     @Test
-    public void updateMedicalRecordReturnsBadRequestTest() {
+    public void addMedicalRecordReturnsInternalServerErrorTest() {
+        MedicalRecordEntity mockMedicalRecordEntity = new MedicalRecordEntity();
+
+        when(medicalRecordService.addMedicalRecord(mockMedicalRecordEntity)).thenThrow(new RuntimeException("Exception test"));
+
+        ResponseEntity<ApiResponse<Void>> responseEntity = medicalRecordController.addMedicalRecord(mockMedicalRecordEntity);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void updateMedicalRecordMissingLastNameReturnsBadRequestTest() {
         String firstName = "John";
         String lastName = "";
 
         MedicalRecordEntity mockMedicalRecordEntity = new MedicalRecordEntity();
 
-        Map<String, String> requestMap = new HashMap<>();
-        requestMap.put("firstName", firstName);
-        requestMap.put("lastName", lastName);
+        ResponseEntity<ApiResponse<Void>> response = medicalRecordController.updateMedicalRecord(firstName, lastName, mockMedicalRecordEntity);
 
-        ResponseEntity<ApiResponse<Void>> response = medicalRecordController.updateMedicalRecord(requestMap, mockMedicalRecordEntity);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Invalid request: firstName or lastName cannot be empty.", response.getBody().getMessage());
+    }
+
+    @Test
+    public void updateMedicalRecordMissingFirstNameReturnsBadRequestTest() {
+        String firstName = "";
+        String lastName = "Doe";
+
+        MedicalRecordEntity mockMedicalRecordEntity = new MedicalRecordEntity();
+
+        ResponseEntity<ApiResponse<Void>> response = medicalRecordController.updateMedicalRecord(firstName, lastName, mockMedicalRecordEntity);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Invalid request: firstName or lastName cannot be empty.", response.getBody().getMessage());
@@ -133,13 +161,9 @@ public class MedicalRecordControllerTest {
 
         MedicalRecordEntity mockMedicalRecordEntity = new MedicalRecordEntity();
 
-        Map<String, String> requestMap = new HashMap<>();
-        requestMap.put("firstName", firstName);
-        requestMap.put("lastName", lastName);
-
         Mockito.when(medicalRecordService.updateMedicalRecord(firstName, lastName, mockMedicalRecordEntity)).thenReturn(true);
 
-        ResponseEntity<ApiResponse<Void>> response = medicalRecordController.updateMedicalRecord(requestMap, mockMedicalRecordEntity);
+        ResponseEntity<ApiResponse<Void>> response = medicalRecordController.updateMedicalRecord(firstName, lastName, mockMedicalRecordEntity);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Medical record successfully updated.", response.getBody().getMessage());
@@ -152,27 +176,44 @@ public class MedicalRecordControllerTest {
 
         MedicalRecordEntity mockMedicalRecordEntity = new MedicalRecordEntity();
 
-        Map<String, String> requestMap = new HashMap<>();
-        requestMap.put("firstName", firstName);
-        requestMap.put("lastName", lastName);
-
         Mockito.when(medicalRecordService.updateMedicalRecord(firstName, lastName, mockMedicalRecordEntity)).thenReturn(false);
 
-        ResponseEntity<ApiResponse<Void>> response = medicalRecordController.updateMedicalRecord(requestMap, mockMedicalRecordEntity);
+        ResponseEntity<ApiResponse<Void>> response = medicalRecordController.updateMedicalRecord(firstName, lastName, mockMedicalRecordEntity);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
-    public void deleteMedicalRecordReturnsBadRequestTest() {
+    public void updateMedicalRecordReturnsInternalServerErrorTest() {
+        String firstName = "John";
+        String lastName = "Doe";
+
+        MedicalRecordEntity mockMedicalRecordEntity = new MedicalRecordEntity();
+
+        when(medicalRecordService.updateMedicalRecord(firstName, lastName, mockMedicalRecordEntity)).thenThrow(new RuntimeException("Exception test"));
+
+        ResponseEntity<ApiResponse<Void>> responseEntity = medicalRecordController.updateMedicalRecord(firstName, lastName, mockMedicalRecordEntity);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void deleteMedicalRecordMissingLastNameReturnsBadRequestTest() {
         String firstName = "John";
         String lastName = "";
 
-        Map<String, String> requestMap = new HashMap<>();
-        requestMap.put("firstName", firstName);
-        requestMap.put("lastName", lastName);
+        ResponseEntity<ApiResponse<Void>> response = medicalRecordController.deleteMedicalRecord(firstName, lastName);
 
-        ResponseEntity<ApiResponse<Void>> response = medicalRecordController.deleteMedicalRecord(requestMap);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Invalid request: firstName or lastName cannot be empty.", response.getBody().getMessage());
+    }
+
+    @Test
+    public void deleteMedicalRecordMissingFirstNameReturnsBadRequestTest() {
+        String firstName = "";
+        String lastName = "Doe";
+
+        ResponseEntity<ApiResponse<Void>> response = medicalRecordController.deleteMedicalRecord(firstName, lastName);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Invalid request: firstName or lastName cannot be empty.", response.getBody().getMessage());
@@ -183,13 +224,9 @@ public class MedicalRecordControllerTest {
         String firstName = "John";
         String lastName = "Doe";
 
-        Map<String, String> requestMap = new HashMap<>();
-        requestMap.put("firstName", firstName);
-        requestMap.put("lastName", lastName);
-
         Mockito.when(medicalRecordService.deleteMedicalRecord(firstName, lastName)).thenReturn(true);
 
-        ResponseEntity<ApiResponse<Void>> response = medicalRecordController.deleteMedicalRecord(requestMap);
+        ResponseEntity<ApiResponse<Void>> response = medicalRecordController.deleteMedicalRecord(firstName, lastName);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Medical record successfully deleted.", response.getBody().getMessage());
@@ -200,14 +237,22 @@ public class MedicalRecordControllerTest {
         String firstName = "John";
         String lastName = "Doe";
 
-        Map<String, String> requestMap = new HashMap<>();
-        requestMap.put("firstName", firstName);
-        requestMap.put("lastName", lastName);
-
         Mockito.when(medicalRecordService.deleteMedicalRecord(firstName, lastName)).thenReturn(false);
 
-        ResponseEntity<ApiResponse<Void>> response = medicalRecordController.deleteMedicalRecord(requestMap);
+        ResponseEntity<ApiResponse<Void>> response = medicalRecordController.deleteMedicalRecord(firstName, lastName);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    public void deleteMedicalRecordReturnsInternalServerErrorTest() {
+        String firstName = "John";
+        String lastName = "Doe";
+
+        when(medicalRecordService.deleteMedicalRecord(firstName, lastName)).thenThrow(new RuntimeException("Exception test"));
+
+        ResponseEntity<ApiResponse<Void>> responseEntity = medicalRecordController.deleteMedicalRecord(firstName, lastName);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
     }
 }

@@ -48,8 +48,8 @@ public class FireStationController {
 
     @PostMapping("/add")
     public ResponseEntity<ApiResponse<Void>> addFireStation(@RequestBody FireStationEntity firestationEntity) {
-        boolean created = fireStationService.addFireStation(firestationEntity);
         try {
+            boolean created = fireStationService.addFireStation(firestationEntity);
             if (created) {
                 logger.info("Fire station successfully created");
                 return ResponseEntity.ok(new ApiResponse<>("Fire station successfully created.", null));
@@ -65,9 +65,8 @@ public class FireStationController {
 
     @PutMapping("/update")
     public ResponseEntity<ApiResponse<Void>> updateFireStation(@RequestParam String address, @RequestBody FireStationEntity fireStationEntity) {
-        boolean updated = fireStationService.updateFireStation(address, fireStationEntity);
-
         try {
+            boolean updated = fireStationService.updateFireStation(address, fireStationEntity);
             if (StringUtils.isBlank(address)) {
                 logger.error("Invalid request: address cannot be empty.");
                 return ResponseEntity.badRequest().body(new ApiResponse<>("Invalid request: address cannot be empty.", null));
@@ -89,9 +88,8 @@ public class FireStationController {
 
     @DeleteMapping("/delete")
     public ResponseEntity<ApiResponse<Void>> deleteFireStation(@RequestParam String address) {
-        boolean deleted = fireStationService.deleteFireStation(address);
-
         try {
+            boolean deleted = fireStationService.deleteFireStation(address);
             if (StringUtils.isBlank(address)) {
                 logger.error("Invalid request: address cannot be empty.");
                 return ResponseEntity.badRequest().body(new ApiResponse<>("Invalid request: address cannot be empty.", null));
