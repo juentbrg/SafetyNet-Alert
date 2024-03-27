@@ -5,13 +5,13 @@ import java.util.Objects;
 
 public class Hearth {
     String address;
-    List<Inhabitant> inhabitantList;
+    List<InhabitantWithPhone> inhabitantWithPhoneList;
 
     public Hearth() {}
 
-    public Hearth(String address, List<Inhabitant> inhabitantList) {
+    public Hearth(String address, List<InhabitantWithPhone> inhabitantWithPhoneList) {
         this.address = address;
-        this.inhabitantList = inhabitantList;
+        this.inhabitantWithPhoneList = inhabitantWithPhoneList;
     }
 
     public String getAddress() {
@@ -22,12 +22,12 @@ public class Hearth {
         this.address = address;
     }
 
-    public List<Inhabitant> getInhabitantList() {
-        return inhabitantList;
+    public List<InhabitantWithPhone> getInhabitantList() {
+        return inhabitantWithPhoneList;
     }
 
-    public void setInhabitantList(List<Inhabitant> inhabitantList) {
-        this.inhabitantList = inhabitantList;
+    public void setInhabitantList(List<InhabitantWithPhone> inhabitantWithPhoneList) {
+        this.inhabitantWithPhoneList = inhabitantWithPhoneList;
     }
 
     @Override
@@ -35,19 +35,19 @@ public class Hearth {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Hearth hearth = (Hearth) o;
-        return Objects.equals(address, hearth.address) && Objects.equals(inhabitantList, hearth.inhabitantList);
+        return Objects.equals(address, hearth.address) && Objects.equals(inhabitantWithPhoneList, hearth.inhabitantWithPhoneList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(address, inhabitantList);
+        return Objects.hash(address, inhabitantWithPhoneList);
     }
 
     @Override
     public String toString() {
         return "Hearth{" +
                 "address='" + address + '\'' +
-                ", inhabitantList=" + inhabitantList +
+                ", inhabitantList=" + inhabitantWithPhoneList +
                 '}';
     }
 }

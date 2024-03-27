@@ -4,22 +4,22 @@ import java.util.List;
 import java.util.Objects;
 
 public class InhabitantWithFireStation {
-    List<Inhabitant> inhabitantList;
+    List<InhabitantWithPhone> inhabitantWithPhoneList;
     int stationNumber;
 
     public InhabitantWithFireStation() {}
 
-    public InhabitantWithFireStation(List<Inhabitant> inhabitantList, int stationNumber) {
-        this.inhabitantList = inhabitantList;
+    public InhabitantWithFireStation(List<InhabitantWithPhone> inhabitantWithPhoneList, int stationNumber) {
+        this.inhabitantWithPhoneList = inhabitantWithPhoneList;
         this.stationNumber = stationNumber;
     }
 
-    public List<Inhabitant> getInhabitantList() {
-        return inhabitantList;
+    public List<InhabitantWithPhone> getInhabitantList() {
+        return inhabitantWithPhoneList;
     }
 
-    public void setInhabitantList(List<Inhabitant> inhabitantList) {
-        this.inhabitantList = inhabitantList;
+    public void setInhabitantList(List<InhabitantWithPhone> inhabitantWithPhoneList) {
+        this.inhabitantWithPhoneList = inhabitantWithPhoneList;
     }
 
     public int getStationNumber() {
@@ -35,18 +35,18 @@ public class InhabitantWithFireStation {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         InhabitantWithFireStation that = (InhabitantWithFireStation) o;
-        return stationNumber == that.stationNumber && Objects.equals(inhabitantList, that.inhabitantList);
+        return stationNumber == that.stationNumber && Objects.equals(inhabitantWithPhoneList, that.inhabitantWithPhoneList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(inhabitantList, stationNumber);
+        return Objects.hash(inhabitantWithPhoneList, stationNumber);
     }
 
     @Override
     public String toString() {
         return "InhabitantWithFireStation{" +
-                "inhabitantList=" + inhabitantList +
+                "inhabitantList=" + inhabitantWithPhoneList +
                 ", stationNumber=" + stationNumber +
                 '}';
     }

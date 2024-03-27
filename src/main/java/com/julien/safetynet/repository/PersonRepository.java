@@ -10,8 +10,10 @@ import org.springframework.stereotype.Repository;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class PersonRepository {
@@ -57,6 +59,19 @@ public class PersonRepository {
                     .findFirst();
         }
     }
+
+    public List<PersonEntity> findAllPersonByFullName(String firstName, String lastName) {
+        Data data = loadData();
+        if (data == null) {
+            logger.error("Error loading data from JSON file");
+            return Collections.emptyList();
+        } else {
+            return data.getPersons().stream()
+                    .filter(person -> person.getFirstName().equalsIgnoreCase(firstName) && person.getLastName().equalsIgnoreCase(lastName))
+                    .collect(Collectors.toList());
+        }
+    }
+
     public List<PersonEntity> findAllPersonByAddress(String address) {
         Data data = loadData();
         if (data == null) {

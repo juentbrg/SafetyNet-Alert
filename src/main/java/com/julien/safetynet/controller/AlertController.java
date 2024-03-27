@@ -2,6 +2,7 @@ package com.julien.safetynet.controller;
 
 import com.julien.safetynet.pojo.Child;
 import com.julien.safetynet.pojo.Hearth;
+import com.julien.safetynet.pojo.InhabitantWithEmail;
 import com.julien.safetynet.pojo.InhabitantWithFireStation;
 import com.julien.safetynet.service.AlertService;
 import com.julien.safetynet.utils.ApiResponse;
@@ -97,4 +98,23 @@ public class AlertController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping("/personInfo")
+    public ResponseEntity<ApiResponse<List<InhabitantWithEmail>>> getInhabitantByFullName(@RequestParam String firstName, @RequestParam String lastName) {
+        try {
+            List<InhabitantWithEmail> inhabitantList = alertService.getInhabitantByFullName(firstName, lastName);
+
+            if (!inhabitantList.isEmpty()) {
+                logger.info("Successful request for firstName {} and lastName {}", firstName, lastName);
+                return ResponseEntity.ok(new ApiResponse<>("Successfully retrieved inhabitant.", inhabitantList));
+            } else {
+                logger.error("No inhabitant found for firstName {} and lastName {}", firstName, lastName);
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            logger.error("Error processing request with {} {}", firstName, lastName, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 }

@@ -10,10 +10,8 @@ import org.springframework.stereotype.Repository;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class MedicalRecordRepository {
@@ -57,6 +55,18 @@ public class MedicalRecordRepository {
             return data.getMedicalrecords().stream()
                     .filter(medicalRecord -> medicalRecord.getFirstName().equalsIgnoreCase(firstName) && medicalRecord.getLastName().equalsIgnoreCase(lastName))
                     .findFirst();
+        }
+    }
+
+    public List<MedicalRecordEntity> findAllMedicalRecordByFullName(String firstName, String lastName) {
+        Data data = loadData();
+        if (data == null) {
+            logger.error("Error loading data from JSON file");
+            return Collections.emptyList();
+        } else {
+            return data.getMedicalrecords().stream()
+                    .filter(medicalRecord -> medicalRecord.getFirstName().equalsIgnoreCase(firstName) && medicalRecord.getLastName().equalsIgnoreCase(lastName))
+                    .collect(Collectors.toList());
         }
     }
 
