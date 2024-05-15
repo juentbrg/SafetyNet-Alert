@@ -73,33 +73,42 @@ public class FireStationRepository {
 
     public void addFireStation(FireStationEntity fireStation) {
         Data data = loadData();
-        if (data == null) {
-            logger.error("Error loading data from JSON file");
-            return;
+        try {
+            if (data == null) {
+                throw new Exception("Error loading data from JSON file");
+            }
+            data.getFirestations().add(fireStation);
+            saveAllFireStations(data);
+        } catch (Exception e) {
+            logger.error("Error saving fireStation to JSON file", e);
         }
-        data.getFirestations().add(fireStation);
-        saveAllFireStations(data);
     }
 
     public void updateFireStation(String address, FireStationEntity updatedFireStation) {
         Data data = loadData();
-        if (data == null) {
-            logger.error("Error loading data from JSON file");
-            return;
+        try {
+            if (data == null) {
+                throw new Exception("Error loading data from JSON file");
+            }
+            List<FireStationEntity> fireStations = data.getFirestations();
+            fireStations.removeIf(fireStation -> fireStation.getAddress().equalsIgnoreCase(address));
+            fireStations.add(updatedFireStation);
+            saveAllFireStations(data);
+        } catch (Exception e) {
+            logger.error("Error updating fireStation to JSON file", e);
         }
-        List<FireStationEntity> fireStations = data.getFirestations();
-        fireStations.removeIf(fireStation -> fireStation.getAddress().equalsIgnoreCase(address));
-        fireStations.add(updatedFireStation);
-        saveAllFireStations(data);
     }
 
     public void deleteFireStation(String address) {
         Data data = loadData();
-        if (data == null) {
-            logger.error("Error loading data from JSON file");
-            return;
+        try {
+            if (data == null) {
+                throw new Exception("Error loading data from JSON file");
+            }
+            data.getFirestations().removeIf(fireStation -> fireStation.getAddress().equalsIgnoreCase(address));
+            saveAllFireStations(data);
+        } catch (Exception e) {
+            logger.error("Error deleting fireStation from JSON file", e);
         }
-        data.getFirestations().removeIf(fireStation -> fireStation.getAddress().equalsIgnoreCase(address));
-        saveAllFireStations(data);
     }
 }

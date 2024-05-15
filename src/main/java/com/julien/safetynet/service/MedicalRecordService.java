@@ -31,21 +31,25 @@ public class MedicalRecordService {
 
     public boolean updateMedicalRecord(String firstName, String lastName, MedicalRecordEntity updatedMedicalRecord) {
         Optional<MedicalRecordEntity> medicalRecordOpt = medicalRecordRepository.findMedicalRecordByFullName(firstName, lastName);
-        if (medicalRecordOpt.isPresent()) {
-            MedicalRecordEntity existingMedicalRecord = medicalRecordOpt.get();
 
-            if (!updatedMedicalRecord.getMedications().isEmpty()) {
-                existingMedicalRecord.setMedications(updatedMedicalRecord.getMedications());
-            }
-            if (!updatedMedicalRecord.getAllergies().isEmpty()) {
-                existingMedicalRecord.setAllergies(updatedMedicalRecord.getAllergies());
-            }
+        try {
+            if (medicalRecordOpt.isPresent()) {
+                MedicalRecordEntity existingMedicalRecord = medicalRecordOpt.get();
 
-            medicalRecordRepository.updateMedicalRecord(firstName, lastName, existingMedicalRecord);
-            return true;
+                if (!updatedMedicalRecord.getMedications().isEmpty()) {
+                    existingMedicalRecord.setMedications(updatedMedicalRecord.getMedications());
+                }
+                if (!updatedMedicalRecord.getAllergies().isEmpty()) {
+                    existingMedicalRecord.setAllergies(updatedMedicalRecord.getAllergies());
+                }
+
+                medicalRecordRepository.updateMedicalRecord(firstName, lastName, existingMedicalRecord);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
         }
-
-        return false;
     }
 
     public boolean deleteMedicalRecord(String firstName, String lastName){

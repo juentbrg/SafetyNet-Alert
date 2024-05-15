@@ -98,34 +98,43 @@ public class PersonRepository {
 
     public void addPerson(PersonEntity newPerson) {
         Data data = loadData();
-        if (data == null) {
-            logger.error("Error loading data from JSON file");
-            return;
+        try {
+            if (data == null) {
+                throw new Exception("Error loading data from JSON file");
+            }
+            data.getPersons().add(newPerson);
+            saveAllPersons(data);
+        } catch (Exception e) {
+            logger.error("Error saving person to JSON file", e);
         }
-        data.getPersons().add(newPerson);
-        saveAllPersons(data);
     }
 
     public void updatePerson(String firstName, String lastName, PersonEntity updatedPerson) {
         Data data = loadData();
-        if (data == null) {
-            logger.error("Error loading data from JSON file");
-            return;
+        try {
+            if (data == null) {
+                throw new Exception("Error loading data from JSON file");
+            }
+            List<PersonEntity> persons = data.getPersons();
+            persons.removeIf(person -> person.getFirstName().equalsIgnoreCase(firstName) && person.getLastName().equalsIgnoreCase(lastName));
+            persons.add(updatedPerson);
+            saveAllPersons(data);
+        } catch (Exception e) {
+            logger.error("Error updating person to JSON file", e);
         }
-        List<PersonEntity> persons = data.getPersons();
-        persons.removeIf(person -> person.getFirstName().equalsIgnoreCase(firstName) && person.getLastName().equalsIgnoreCase(lastName));
-        persons.add(updatedPerson);
-        saveAllPersons(data);
     }
 
     public void deletePerson(String firstName, String lastName) {
         Data data = loadData();
-        if (data == null) {
-            logger.error("Error loading data from JSON file");
-            return;
+        try {
+            if (data == null) {
+                throw new Exception("Error loading data from JSON file");
+            }
+            data.getPersons().removeIf(person -> person.getFirstName().equalsIgnoreCase(firstName) && person.getLastName().equalsIgnoreCase(lastName));
+            saveAllPersons(data);
+        } catch (Exception e) {
+            logger.error("Error deleting person to JSON file", e);
         }
-        data.getPersons().removeIf(person -> person.getFirstName().equalsIgnoreCase(firstName) && person.getLastName().equalsIgnoreCase(lastName));
-        saveAllPersons(data);
     }
 }
 

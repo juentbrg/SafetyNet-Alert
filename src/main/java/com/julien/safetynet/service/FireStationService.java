@@ -19,18 +19,21 @@ import java.util.*;
 public class FireStationService {
 
     private final FireStationRepository fireStationRepository;
-    private final PersonRepository personRepository;
-    private final MedicalRecordRepository medicalRecordRepository;
 
-    public FireStationService(FireStationRepository fireStationRepository, PersonRepository personRepository, MedicalRecordRepository medicalRecordRepository) {
+    public FireStationService(FireStationRepository fireStationRepository) {
         this.fireStationRepository = fireStationRepository;
-        this.personRepository = personRepository;
-        this.medicalRecordRepository = medicalRecordRepository;
     }
 
     public FireStationEntity getFireStationByAddress(String address) {
         Optional<FireStationEntity> fireStationOpt = fireStationRepository.findFireStationByAddress(address);
-        return fireStationOpt.orElse(null);
+        try {
+            if (fireStationOpt.isPresent()) {
+                return fireStationOpt.get();
+            }
+        } catch (Exception e){
+            return null;
+        }
+        return null;
     }
 
     public boolean addFireStation(FireStationEntity fireStationEntity) {
@@ -45,17 +48,20 @@ public class FireStationService {
     public boolean updateFireStation(String address, FireStationEntity updatedFireStation) {
         Optional<FireStationEntity> fireStationOpt = fireStationRepository.findFireStationByAddress(address);
 
-        if (fireStationOpt.isPresent()) {
-            FireStationEntity existingFireStation = fireStationOpt.get();
+        try {
+            if (fireStationOpt.isPresent()) {
+                FireStationEntity existingFireStation = fireStationOpt.get();
 
-            if (null != updatedFireStation.getStation()) {
-                existingFireStation.setStation(updatedFireStation.getStation());
+                if (null != updatedFireStation.getStation()) {
+                    existingFireStation.setStation(updatedFireStation.getStation());
+                }
+
+                fireStationRepository.updateFireStation(address, existingFireStation);
+                return true;
             }
-
-            fireStationRepository.updateFireStation(address, existingFireStation);
-            return true;
+        } catch (Exception e){
+            return false;
         }
-
         return false;
     }
 

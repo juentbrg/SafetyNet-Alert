@@ -31,28 +31,33 @@ public class PersonService {
 
     public boolean updatePerson(String firstName, String lastName, PersonEntity updatedPerson) {
         Optional<PersonEntity> personOpt = personRepository.findPersonByFullName(firstName, lastName);
-        if (personOpt.isPresent()) {
-            PersonEntity existingPerson = personOpt.get();
 
-            if (null != updatedPerson.getAddress()) {
-                existingPerson.setAddress(updatedPerson.getAddress());
+        try {
+            if (personOpt.isPresent()) {
+                PersonEntity existingPerson = personOpt.get();
+
+                if (null != updatedPerson.getAddress()) {
+                    existingPerson.setAddress(updatedPerson.getAddress());
+                }
+                if (null != updatedPerson.getCity()){
+                    existingPerson.setCity(updatedPerson.getCity());
+                }
+                if (null != updatedPerson.getZip()) {
+                    existingPerson.setZip(updatedPerson.getZip());
+                }
+                if (null != updatedPerson.getPhone()) {
+                    existingPerson.setPhone(updatedPerson.getPhone());
+                }
+                if (null != updatedPerson.getEmail()) {
+                    existingPerson.setEmail(updatedPerson.getEmail());
+                }
+                personRepository.updatePerson(firstName, lastName, existingPerson);
+                return true;
             }
-            if (null != updatedPerson.getCity()){
-                existingPerson.setCity(updatedPerson.getCity());
-            }
-            if (null != updatedPerson.getZip()) {
-                existingPerson.setZip(updatedPerson.getZip());
-            }
-            if (null != updatedPerson.getPhone()) {
-                existingPerson.setPhone(updatedPerson.getPhone());
-            }
-            if (null != updatedPerson.getEmail()) {
-                existingPerson.setEmail(updatedPerson.getEmail());
-            }
-            personRepository.updatePerson(firstName, lastName, existingPerson);
-            return true;
+            return false;
+        } catch (Exception e) {
+            return false;
         }
-        return false;
     }
 
     public boolean deletePerson(String firstName, String lastName) {

@@ -72,34 +72,43 @@ public class MedicalRecordRepository {
 
     public void addMedicalRecord(MedicalRecordEntity newMedicalRecord) {
         Data data = loadData();
-        if (data == null) {
-            logger.error("Error loading data from JSON file");
-            return;
+        try {
+            if (data == null) {
+                throw new Exception("Error loading data from JSON file");
+            }
+            data.getMedicalrecords().add(newMedicalRecord);
+            saveAllMedicalRecords(data);
+        } catch (Exception e) {
+            logger.error("Error saving medical record", e);
         }
-        data.getMedicalrecords().add(newMedicalRecord);
-        saveAllMedicalRecords(data);
     }
 
     public void updateMedicalRecord(String firstName, String lastName, MedicalRecordEntity updatedMedicalRecord) {
         Data data = loadData();
-        if (data == null) {
-            logger.error("Error loading data from JSON file");
-            return;
+        try {
+            if (data == null) {
+                throw new Exception("Error loading data from JSON file");
+            }
+            List<MedicalRecordEntity> medicalRecords = data.getMedicalrecords();
+            medicalRecords.removeIf(medicalRecord -> medicalRecord.getFirstName().equalsIgnoreCase(firstName) && medicalRecord.getLastName().equalsIgnoreCase(lastName));
+            medicalRecords.add(updatedMedicalRecord);
+            saveAllMedicalRecords(data);
+        } catch (Exception e) {
+            logger.error("Error updating medical record", e);
         }
-        List<MedicalRecordEntity> medicalRecords = data.getMedicalrecords();
-        medicalRecords.removeIf(medicalRecord -> medicalRecord.getFirstName().equalsIgnoreCase(firstName) && medicalRecord.getLastName().equalsIgnoreCase(lastName));
-        medicalRecords.add(updatedMedicalRecord);
-        saveAllMedicalRecords(data);
     }
 
     public void deleteMedicalRecord(String firstName, String lastName) {
         Data data = loadData();
-        if (data == null) {
-            logger.error("Error loading data from JSON file");
-            return;
+        try {
+            if (data == null) {
+                throw new Exception("Error loading data from JSON file");
+            }
+            data.getMedicalrecords().removeIf(medicalRecord -> medicalRecord.getFirstName().equalsIgnoreCase(firstName) && medicalRecord.getLastName().equalsIgnoreCase(lastName));
+            saveAllMedicalRecords(data);
+        } catch (Exception e) {
+            logger.error("Error deleting medical record", e);
         }
-        data.getMedicalrecords().removeIf(medicalRecord -> medicalRecord.getFirstName().equalsIgnoreCase(firstName) && medicalRecord.getLastName().equalsIgnoreCase(lastName));
-        saveAllMedicalRecords(data);
     }
 }
 
