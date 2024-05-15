@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class Hearth {
-    String address;
-    List<InhabitantWithPhone> inhabitantWithPhoneList;
+    private String address;
+    private List<InhabitantWithPhone> inhabitantWithPhoneList;
 
     public Hearth() {}
 

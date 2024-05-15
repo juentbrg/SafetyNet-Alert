@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class PersonCovered {
-    List<PersonCoveredDTO> personCovered;
-    int childrenNumber;
-    int adultNumber;
+    private List<PersonCoveredDTO> personCovered;
+    private int childrenNumber;
+    private int adultNumber;
 
     public PersonCovered() {}
 

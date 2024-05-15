@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class InhabitantWithFireStation {
-    List<InhabitantWithPhone> inhabitantWithPhoneList;
-    int stationNumber;
+    private List<InhabitantWithPhone> inhabitantWithPhoneList;
+    private int stationNumber;
 
     public InhabitantWithFireStation() {}
 

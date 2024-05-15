@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class Child {
-    String firstName;
-    String lastName;
-    int age;
-    List<PersonCoveredDTO> otherPersonInHousehold;
+    private String firstName;
+    private String lastName;
+    private int age;
+    private List<PersonCoveredDTO> otherPersonInHousehold;
 
     public Child() {}
 

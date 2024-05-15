@@ -4,12 +4,12 @@ import java.util.List;
 import java.util.Objects;
 
 public class InhabitantWithEmail {
-    String firstName;
-    String lastName;
-    String email;
-    int age;
-    List<String> medication;
-    List<String> allergies;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private int age;
+    private List<String> medication;
+    private List<String> allergies;
 
     public InhabitantWithEmail() {}
 
