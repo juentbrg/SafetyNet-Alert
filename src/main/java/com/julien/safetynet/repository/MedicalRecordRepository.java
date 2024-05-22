@@ -3,6 +3,7 @@ package com.julien.safetynet.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.julien.safetynet.entity.Data;
 import com.julien.safetynet.entity.MedicalRecordEntity;
+import com.julien.safetynet.utils.JsonDataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,36 +19,14 @@ public class MedicalRecordRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(MedicalRecordRepository.class);
 
-    @Value("${json.filePath}")
-    private String jsonFilePath;
+    private final JsonDataUtils jsonDataUtils;
 
-    private Data loadData() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        File file = new File(jsonFilePath);
-
-        if (!file.exists()) {
-            logger.error("JSON file not found");
-        }
-
-        try {
-            return objectMapper.readValue(file, Data.class);
-        } catch (Exception e) {
-            logger.error("Error loading data from JSON file", e);
-            return null;
-        }
-    }
-
-    private void saveAllMedicalRecords(Data data) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            objectMapper.writeValue(new File(jsonFilePath), data);
-        } catch (IOException e) {
-            logger.error("Error saving medical records to JSON file", e);
-        }
+    public MedicalRecordRepository(JsonDataUtils jsonDataUtils) {
+        this.jsonDataUtils = jsonDataUtils;
     }
 
     public Optional<MedicalRecordEntity> findMedicalRecordByFullName(String firstName, String lastName) {
-        Data data = loadData();
+        Data data = jsonDataUtils.loadData();
         if (data == null) {
             logger.error("Error loading data from JSON file");
             return Optional.empty();
@@ -59,10 +38,10 @@ public class MedicalRecordRepository {
     }
 
     public List<MedicalRecordEntity> findAllMedicalRecordByFullName(String firstName, String lastName) {
-        Data data = loadData();
+        Data data = jsonDataUtils.loadData();
         if (data == null) {
             logger.error("Error loading data from JSON file");
-            return Collections.emptyList();
+            return null;
         } else {
             return data.getMedicalrecords().stream()
                     .filter(medicalRecord -> medicalRecord.getFirstName().equalsIgnoreCase(firstName) && medicalRecord.getLastName().equalsIgnoreCase(lastName))
@@ -71,20 +50,20 @@ public class MedicalRecordRepository {
     }
 
     public void addMedicalRecord(MedicalRecordEntity newMedicalRecord) {
-        Data data = loadData();
+        Data data = jsonDataUtils.loadData();
         try {
             if (data == null) {
                 throw new Exception("Error loading data from JSON file");
             }
             data.getMedicalrecords().add(newMedicalRecord);
-            saveAllMedicalRecords(data);
+            jsonDataUtils.saveAllData(data);
         } catch (Exception e) {
             logger.error("Error saving medical record", e);
         }
     }
 
     public void updateMedicalRecord(String firstName, String lastName, MedicalRecordEntity updatedMedicalRecord) {
-        Data data = loadData();
+        Data data = jsonDataUtils.loadData();
         try {
             if (data == null) {
                 throw new Exception("Error loading data from JSON file");
@@ -92,20 +71,20 @@ public class MedicalRecordRepository {
             List<MedicalRecordEntity> medicalRecords = data.getMedicalrecords();
             medicalRecords.removeIf(medicalRecord -> medicalRecord.getFirstName().equalsIgnoreCase(firstName) && medicalRecord.getLastName().equalsIgnoreCase(lastName));
             medicalRecords.add(updatedMedicalRecord);
-            saveAllMedicalRecords(data);
+            jsonDataUtils.saveAllData(data);
         } catch (Exception e) {
             logger.error("Error updating medical record", e);
         }
     }
 
     public void deleteMedicalRecord(String firstName, String lastName) {
-        Data data = loadData();
+        Data data = jsonDataUtils.loadData();
         try {
             if (data == null) {
                 throw new Exception("Error loading data from JSON file");
             }
             data.getMedicalrecords().removeIf(medicalRecord -> medicalRecord.getFirstName().equalsIgnoreCase(firstName) && medicalRecord.getLastName().equalsIgnoreCase(lastName));
-            saveAllMedicalRecords(data);
+            jsonDataUtils.saveAllData(data);
         } catch (Exception e) {
             logger.error("Error deleting medical record", e);
         }

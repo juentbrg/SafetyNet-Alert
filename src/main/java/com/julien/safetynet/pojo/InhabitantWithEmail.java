@@ -13,15 +13,6 @@ public class InhabitantWithEmail {
 
     public InhabitantWithEmail() {}
 
-    public InhabitantWithEmail(String firstName, String lastName, String email, int age, List<String> medication, List<String> allergies) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.age = age;
-        this.medication = medication;
-        this.allergies = allergies;
-    }
-
     public String getFirstName() {
         return firstName;
     }
@@ -68,30 +59,5 @@ public class InhabitantWithEmail {
 
     public void setAllergies(List<String> allergies) {
         this.allergies = allergies;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        InhabitantWithEmail that = (InhabitantWithEmail) o;
-        return age == that.age && Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(email, that.email) && Objects.equals(medication, that.medication) && Objects.equals(allergies, that.allergies);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(firstName, lastName, email, age, medication, allergies);
-    }
-
-    @Override
-    public String toString() {
-        return "InhabitantWithEmail{" +
-                "firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", age=" + age +
-                ", medication=" + medication +
-                ", allergies=" + allergies +
-                '}';
     }
 }

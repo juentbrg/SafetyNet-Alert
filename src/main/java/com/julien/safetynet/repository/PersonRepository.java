@@ -3,6 +3,7 @@ package com.julien.safetynet.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.julien.safetynet.entity.Data;
 import com.julien.safetynet.entity.PersonEntity;
+import com.julien.safetynet.utils.JsonDataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,39 +21,17 @@ public class PersonRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(PersonRepository.class);
 
-    @Value("${json.filePath}")
-    private String jsonFilePath;
+    private final JsonDataUtils jsonDataUtils;
 
-    private Data loadData() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        File file = new File(jsonFilePath);
-
-        if (!file.exists()) {
-            logger.error("JSON file not found");
-        }
-
-        try {
-            return objectMapper.readValue(file, Data.class);
-        } catch (Exception e) {
-            logger.error("Error loading data from JSON file", e);
-            return null;
-        }
-    }
-
-    private void saveAllPersons(Data data) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            objectMapper.writeValue(new File(jsonFilePath), data);
-        } catch (IOException e) {
-            logger.error("Error saving persons to JSON file", e);
-        }
+    public PersonRepository(JsonDataUtils jsonDataUtils) {
+        this.jsonDataUtils = jsonDataUtils;
     }
 
     public List<PersonEntity> findAllPersonByCity(String city) {
-        Data data = loadData();
+        Data data = jsonDataUtils.loadData();
         if (data == null) {
             logger.error("Error loading data from JSON file");
-            return Collections.emptyList();
+            return null;
         } else {
             return data.getPersons().stream()
                     .filter(person -> person.getCity().equalsIgnoreCase(city))
@@ -61,7 +40,7 @@ public class PersonRepository {
     }
 
     public Optional<PersonEntity> findPersonByFullName(String firstName, String lastName) {
-        Data data = loadData();
+        Data data = jsonDataUtils.loadData();
         if (data == null) {
             logger.error("Error loading data from JSON file");
             return Optional.empty();
@@ -73,10 +52,10 @@ public class PersonRepository {
     }
 
     public List<PersonEntity> findAllPersonByFullName(String firstName, String lastName) {
-        Data data = loadData();
+        Data data = jsonDataUtils.loadData();
         if (data == null) {
             logger.error("Error loading data from JSON file");
-            return Collections.emptyList();
+            return null;
         } else {
             return data.getPersons().stream()
                     .filter(person -> person.getFirstName().equalsIgnoreCase(firstName) && person.getLastName().equalsIgnoreCase(lastName))
@@ -85,7 +64,7 @@ public class PersonRepository {
     }
 
     public List<PersonEntity> findAllPersonByAddress(String address) {
-        Data data = loadData();
+        Data data = jsonDataUtils.loadData();
         if (data == null) {
             logger.error("Error loading data from JSON file");
             return null;
@@ -97,20 +76,20 @@ public class PersonRepository {
     }
 
     public void addPerson(PersonEntity newPerson) {
-        Data data = loadData();
+        Data data = jsonDataUtils.loadData();
         try {
             if (data == null) {
                 throw new Exception("Error loading data from JSON file");
             }
             data.getPersons().add(newPerson);
-            saveAllPersons(data);
+            jsonDataUtils.saveAllData(data);
         } catch (Exception e) {
             logger.error("Error saving person to JSON file", e);
         }
     }
 
     public void updatePerson(String firstName, String lastName, PersonEntity updatedPerson) {
-        Data data = loadData();
+        Data data = jsonDataUtils.loadData();
         try {
             if (data == null) {
                 throw new Exception("Error loading data from JSON file");
@@ -118,20 +97,20 @@ public class PersonRepository {
             List<PersonEntity> persons = data.getPersons();
             persons.removeIf(person -> person.getFirstName().equalsIgnoreCase(firstName) && person.getLastName().equalsIgnoreCase(lastName));
             persons.add(updatedPerson);
-            saveAllPersons(data);
+            jsonDataUtils.saveAllData(data);
         } catch (Exception e) {
             logger.error("Error updating person to JSON file", e);
         }
     }
 
     public void deletePerson(String firstName, String lastName) {
-        Data data = loadData();
+        Data data = jsonDataUtils.loadData();
         try {
             if (data == null) {
                 throw new Exception("Error loading data from JSON file");
             }
             data.getPersons().removeIf(person -> person.getFirstName().equalsIgnoreCase(firstName) && person.getLastName().equalsIgnoreCase(lastName));
-            saveAllPersons(data);
+            jsonDataUtils.saveAllData(data);
         } catch (Exception e) {
             logger.error("Error deleting person to JSON file", e);
         }

@@ -12,12 +12,6 @@ public class PersonCovered {
 
     public PersonCovered() {}
 
-    public PersonCovered(List<PersonCoveredDTO> personCovered, int childrenNumber, int adultNumber) {
-        this.personCovered = personCovered;
-        this.childrenNumber = childrenNumber;
-        this.adultNumber = adultNumber;
-    }
-
     public List<PersonCoveredDTO> getPersonCovered() {
         return personCovered;
     }
@@ -40,28 +34,6 @@ public class PersonCovered {
 
     public void setAdultNumber(int adultNumber) {
         this.adultNumber = adultNumber;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PersonCovered that = (PersonCovered) o;
-        return childrenNumber == that.childrenNumber && adultNumber == that.adultNumber && Objects.equals(personCovered, that.personCovered);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(personCovered, childrenNumber, adultNumber);
-    }
-
-    @Override
-    public String toString() {
-        return "PersonCovered{" +
-                "personCovered=" + personCovered +
-                ", childrenNumber=" + childrenNumber +
-                ", adultNumber=" + adultNumber +
-                '}';
     }
 }
 

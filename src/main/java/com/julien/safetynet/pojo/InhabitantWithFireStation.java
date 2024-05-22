@@ -9,11 +9,6 @@ public class InhabitantWithFireStation {
 
     public InhabitantWithFireStation() {}
 
-    public InhabitantWithFireStation(List<InhabitantWithPhone> inhabitantWithPhoneList, int stationNumber) {
-        this.inhabitantWithPhoneList = inhabitantWithPhoneList;
-        this.stationNumber = stationNumber;
-    }
-
     public List<InhabitantWithPhone> getInhabitantList() {
         return inhabitantWithPhoneList;
     }
@@ -28,26 +23,5 @@ public class InhabitantWithFireStation {
 
     public void setStationNumber(int stationNumber) {
         this.stationNumber = stationNumber;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        InhabitantWithFireStation that = (InhabitantWithFireStation) o;
-        return stationNumber == that.stationNumber && Objects.equals(inhabitantWithPhoneList, that.inhabitantWithPhoneList);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(inhabitantWithPhoneList, stationNumber);
-    }
-
-    @Override
-    public String toString() {
-        return "InhabitantWithFireStation{" +
-                "inhabitantList=" + inhabitantWithPhoneList +
-                ", stationNumber=" + stationNumber +
-                '}';
     }
 }
