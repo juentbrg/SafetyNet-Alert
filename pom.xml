@@ -20,6 +20,7 @@
 		<jacoco.version>0.8.11</jacoco.version> <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
 		<surefire.version>3.2.5</surefire.version> <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
 		<log4j.version>2.22.1</log4j.version> <!-- https://logging.apache.org/log4j/2.x/maven-artifacts.html -->
+		<surefire.report.version>3.0.0-M1</surefire.report.version> <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-report-plugin -->
 	</properties>
 	<dependencies>
 		<dependency>
@@ -89,7 +90,37 @@
 					<reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>${surefire.report.version}</version>
+				<executions>
+					<execution>
+						<phase>test</phase>
+						<goals>
+							<goal>report-only</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>${surefire.report.version}</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>report-only</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
 
 </project>
