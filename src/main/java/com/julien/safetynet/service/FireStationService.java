@@ -1,18 +1,9 @@
 package com.julien.safetynet.service;
 
-import com.julien.safetynet.DTO.PersonCoveredDTO;
 import com.julien.safetynet.entity.FireStationEntity;
-import com.julien.safetynet.entity.MedicalRecordEntity;
-import com.julien.safetynet.entity.PersonEntity;
-import com.julien.safetynet.pojo.PersonCovered;
 import com.julien.safetynet.repository.FireStationRepository;
-import com.julien.safetynet.repository.MedicalRecordRepository;
-import com.julien.safetynet.repository.PersonRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service

@@ -1,7 +1,6 @@
 package com.julien.safetynet.pojo;
 
 import java.util.List;
-import java.util.Objects;
 
 public class InhabitantWithEmail {
     private String firstName;

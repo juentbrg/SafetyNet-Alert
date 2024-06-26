@@ -24,6 +24,7 @@ public class AlertController {
         this.alertService = alertService;
     }
 
+    // Remonte les personnes couverte par la station
     @GetMapping
     public ResponseEntity<ApiResponse<PersonCovered>> getPeopleCovered(@RequestParam int stationNumber) {
         try {
@@ -42,6 +43,7 @@ public class AlertController {
         }
     }
 
+    // remonte les enfants habitant à cette addresse
     @GetMapping("/childAlert")
     public ResponseEntity<ApiResponse<List<Child>>> findChildByAdress(@RequestParam String address){
         if (address.isEmpty()) {
@@ -63,6 +65,7 @@ public class AlertController {
         }
     }
 
+    // remonte les numéros de téléphone des résidents désservis par la caserne
     @GetMapping("/phoneAlert")
     public ResponseEntity<ApiResponse<List<String>>> getPhoneNumberResidentServed(@RequestParam int firestation){
         try {
@@ -81,6 +84,7 @@ public class AlertController {
         }
     }
 
+    // retourne la liste des habitants par address et le numéro de la caserne
     @GetMapping("/fire")
     public ResponseEntity<ApiResponse<InhabitantWithFireStation>> getInhabitantAndFireStationByAddress(@RequestParam String address){
         if (address.isEmpty()) {
@@ -102,6 +106,7 @@ public class AlertController {
         }
     }
 
+    // retourne une liste de tous les foyers desservis par la caserne
     @GetMapping("/flood/stations")
     public ResponseEntity<ApiResponse<List<Hearth>>> getHearthByStationNumber(@RequestParam List<Integer> stations) {
         try {
@@ -120,8 +125,9 @@ public class AlertController {
         }
     }
 
+    // retourne le nom, l'adresse, l'âge, l'adresse mail et les antécédents médicaux d'une personne
     @GetMapping("/personInfo")
-    public ResponseEntity<ApiResponse<List<InhabitantWithEmail>>> getInhabitantByFullName(@RequestParam String firstName, @RequestParam String lastName) {
+    public ResponseEntity<ApiResponse<List<InhabitantWithEmail>>> getInhabitantByFullName(@RequestParam String firstName, String lastName) {
         if (firstName.isEmpty() || lastName.isEmpty()) {
             return ResponseEntity.badRequest().body(new ApiResponse<>("Firstname or lastname field is missing.", null));
         }
@@ -141,6 +147,7 @@ public class AlertController {
         }
     }
 
+    // retourne les adresses mail de tous les habitants
     @GetMapping("/communityEmail")
     public ResponseEntity<ApiResponse<List<String>>> getCommunityEmailByCity(@RequestParam String city) {
         if (city.isEmpty()) {

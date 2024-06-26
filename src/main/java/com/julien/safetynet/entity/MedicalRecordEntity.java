@@ -1,7 +1,6 @@
 package com.julien.safetynet.entity;
 
 import java.util.List;
-import java.util.Objects;
 
 public class MedicalRecordEntity {
     private String firstName;

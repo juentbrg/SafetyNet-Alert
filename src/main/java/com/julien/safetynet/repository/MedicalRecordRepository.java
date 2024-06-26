@@ -1,16 +1,12 @@
 package com.julien.safetynet.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.julien.safetynet.entity.Data;
 import com.julien.safetynet.entity.MedicalRecordEntity;
 import com.julien.safetynet.utils.JsonDataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 

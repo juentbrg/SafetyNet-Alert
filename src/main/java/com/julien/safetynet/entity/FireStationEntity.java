@@ -1,7 +1,5 @@
 package com.julien.safetynet.entity;
 
-import java.util.Objects;
-
 public class FireStationEntity {
     private String address;
     private Integer station;

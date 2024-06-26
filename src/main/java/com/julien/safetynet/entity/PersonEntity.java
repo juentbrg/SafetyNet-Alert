@@ -1,7 +1,5 @@
 package com.julien.safetynet.entity;
 
-import java.util.Objects;
-
 public class PersonEntity {
     private String firstName;
     private String lastName;

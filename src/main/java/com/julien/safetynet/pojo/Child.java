@@ -3,7 +3,6 @@ package com.julien.safetynet.pojo;
 import com.julien.safetynet.DTO.PersonCoveredDTO;
 
 import java.util.List;
-import java.util.Objects;
 
 public class Child {
     private String firstName;

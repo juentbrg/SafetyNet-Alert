@@ -1,7 +1,6 @@
 package com.julien.safetynet.controller;
 
 import com.julien.safetynet.entity.FireStationEntity;
-import com.julien.safetynet.pojo.PersonCovered;
 import com.julien.safetynet.service.FireStationService;
 import com.julien.safetynet.utils.ApiResponse;
 import io.micrometer.common.util.StringUtils;
